@@ -24,6 +24,16 @@ DEFAULT_MODEL = "Babelscape/wikineural-multilingual-ner"  # ungated multilingual
 # CoNLL-style tags -> Kavach PII classes (MISC is ignored).
 LABEL_MAP = {"PER": "NAME", "PERSON": "NAME", "LOC": "ADDRESS", "ORG": "ORG"}
 
+# Common prompt/template words the multilingual model mislabels as PER/LOC.
+# Dropping these cuts false positives without hurting real-name recall.
+STOPWORDS = {
+    "patient", "account", "card", "payment", "email", "mobile", "number",
+    "update", "confirm", "transfer", "holder", "aadhaar", "aadhar", "pan",
+    "upi", "ifsc", "abha", "please", "system", "name", "from", "diagnosed",
+    "paid", "today", "bank", "paisa", "daal", "bhej", "karna", "mat", "par",
+    "my", "me", "is", "the", "and",
+}
+
 
 def _load(model_id: str):
     global _PIPE, _TRIED, _ERROR
@@ -47,7 +57,7 @@ def _load(model_id: str):
 class TransformerNER:
     """MuRIL-backed NER with per-entity spans; empty list if unavailable."""
 
-    def __init__(self, model_id: str = DEFAULT_MODEL, min_score: float = 0.5):
+    def __init__(self, model_id: str = DEFAULT_MODEL, min_score: float = 0.6):
         self.model_id = model_id
         self.min_score = min_score
 
@@ -71,5 +81,8 @@ class TransformerNER:
             score = float(ent.get("score", 0.0))
             if cls and cls != "ORG" and score >= self.min_score:
                 s, e = int(ent["start"]), int(ent["end"])
-                out.append((cls, text[s:e], s, e, round(score, 3)))
+                val = text[s:e]
+                if len(val.strip()) < 2 or val.lower() in STOPWORDS or not any(c.isalpha() for c in val):
+                    continue  # FP reduction
+                out.append((cls, val, s, e, round(score, 3)))
         return out

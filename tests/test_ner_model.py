@@ -30,6 +30,21 @@ class TestBackendWiring(unittest.TestCase):
         self.assertEqual(names[0].value, "Venkatesh")
 
 
+class TestUnion(unittest.TestCase):
+    """Model + heuristic union: the gazetteer backstops names the model misses."""
+
+    def test_union_recovers_known_name(self):
+        class StubNER:
+            def detect(self, text):
+                i = text.find("Venkatachalapathy")
+                return [("NAME", "Venkatachalapathy", i, i + 17, 0.95)] if i >= 0 else []
+
+        det = Detector(ner_backend=StubNER())
+        found = {(d.cls, d.value) for d in det.scan("Venkatachalapathy and Ravi are here")}
+        self.assertIn(("NAME", "Venkatachalapathy"), found)  # from the model
+        self.assertIn(("NAME", "Ravi"), found)               # gazetteer union recovered it
+
+
 @unittest.skipUnless(os.environ.get("KAVACH_TEST_NER"), "set KAVACH_TEST_NER=1 to run the MuRIL model")
 class TestMurilModel(unittest.TestCase):
     def test_detects_out_of_gazetteer_name(self):

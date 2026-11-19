@@ -117,15 +117,18 @@ class Detector:
             if cls:
                 take(Detection(cls, text[s:e], canon, s, e, round(conf - 0.05, 2), "number_word"))
 
-        # 4) NER layer — MuRIL backend if provided, else heuristic names
+        # 4) NER layer — UNION of the MuRIL backend (generalises to unseen names/
+        #    places) and the heuristic gazetteer (backstops known ones). Higher
+        #    confidence wins on overlap; together they beat either alone.
+        ner_hits: list[tuple[str, str, int, int, float, str]] = []
         if self._ner is not None:
             for cls, value, s, e, conf in self._ner.detect(text):
-                if not overlaps(s, e):
-                    take(Detection(cls, value, value, s, e, conf, "ner_model"))
-        else:
-            for value, s, e, conf in ner.detect_names(text):
-                if not overlaps(s, e):
-                    take(Detection("NAME", value, value, s, e, conf, "ner_stub"))
+                ner_hits.append((cls, value, s, e, conf, "ner_model"))
+        for value, s, e, conf in ner.detect_names(text):
+            ner_hits.append(("NAME", value, s, e, conf, "ner_heuristic"))
+        for cls, value, s, e, conf, method in sorted(ner_hits, key=lambda h: -h[4]):
+            if not overlaps(s, e):
+                take(Detection(cls, value, value, s, e, conf, method))
 
         # 5) gazetteers — health conditions and cities (NER generalises ADDRESS)
         for value, s, e in gz.scan(text, gz.HEALTH_SET):
