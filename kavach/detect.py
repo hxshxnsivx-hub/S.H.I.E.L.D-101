@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from . import gazetteers as gz
 from . import ner
 from . import normalize as nz
 from . import validators as v
@@ -26,6 +27,7 @@ class Detection:
     method: str
 
 
+_ABHA = re.compile(r"\b[a-zA-Z0-9.\-_]{2,}@(?:abdm|sbx|ndhm)\b")
 _UPI = re.compile(r"[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z][a-zA-Z0-9]{1,63}")
 _EMAIL = re.compile(r"\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\b")
 _PAN = re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b")
@@ -85,6 +87,7 @@ class Detector:
 
         # 1) structured identifiers (validated) — highest precision, run first
         structured = [
+            (_ABHA, "HEALTH", 0.90, lambda x: True),   # ABHA address, before UPI/EMAIL
             (_GSTIN, "GSTIN", 0.99, v.is_gstin),
             (_PAN, "PAN", 0.90, v.is_pan),
             (_IFSC, "IFSC", 0.90, v.is_ifsc),
@@ -123,6 +126,14 @@ class Detector:
             for value, s, e, conf in ner.detect_names(text):
                 if not overlaps(s, e):
                     take(Detection("NAME", value, value, s, e, conf, "ner_stub"))
+
+        # 5) gazetteers — health conditions and cities (NER generalises ADDRESS)
+        for value, s, e in gz.scan(text, gz.HEALTH_SET):
+            if not overlaps(s, e):
+                take(Detection("HEALTH", value, value, s, e, 0.70, "gazetteer"))
+        for value, s, e in gz.scan(text, gz.CITY_SET):
+            if not overlaps(s, e):
+                take(Detection("ADDRESS", value, value, s, e, 0.70, "gazetteer"))
 
         dets.sort(key=lambda d: d.start)
         return dets

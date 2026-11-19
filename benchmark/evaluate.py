@@ -22,11 +22,22 @@ import generate as G  # noqa: E402
 from kavach.detect import Detector  # noqa: E402
 
 
-def run(n: int, seed: int) -> None:
+def run(n: int, seed: int, use_ner: bool = False) -> None:
     import random
     random.seed(seed)
     examples = list(G.generate(n))
-    det = Detector()
+    ner_status = "off"
+    if use_ner:
+        from kavach.ner_model import TransformerNER
+        backend = TransformerNER()
+        if backend.available:
+            det = Detector(ner_backend=backend)
+            ner_status = f"on ({backend.model_id})"
+        else:
+            print("NER backend unavailable, falling back:", backend.error)
+            det = Detector()
+    else:
+        det = Detector()
 
     gold_total: dict[str, int] = defaultdict(int)
     gold_hit: dict[str, int] = defaultdict(int)
@@ -49,7 +60,7 @@ def run(n: int, seed: int) -> None:
             else:
                 fp_by_cls[key[0]] += 1
 
-    print(f"\nKavach D2 detection — benchmark eval (n={n} examples, seed={seed})\n")
+    print(f"\nKavach D2 detection — benchmark eval (n={n} examples, seed={seed}, NER: {ner_status})\n")
     print(f"{'class':<14}{'gold':>6}{'found':>7}{'recall':>9}")
     print("-" * 40)
     for cls in sorted(gold_total):
@@ -72,10 +83,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=11)
+    ap.add_argument("--ner", action="store_true", help="enable the transformer NER backend")
     args = ap.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    run(args.n, args.seed)
+    run(args.n, args.seed, use_ner=args.ner)
 
 
 if __name__ == "__main__":

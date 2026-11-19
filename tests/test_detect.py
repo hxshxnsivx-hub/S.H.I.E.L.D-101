@@ -63,6 +63,11 @@ class TestDetect(unittest.TestCase):
         self.assertIn("NAME", classes("My name is Priya and I need help"))
         self.assertIn("NAME", classes("என் பெயர் Karthik"))
 
+    def test_health_and_address(self):
+        found = classes("patient from Chennai has diabetes, ABHA ravi@abdm")
+        self.assertIn("ADDRESS", found)   # city gazetteer
+        self.assertIn("HEALTH", found)    # condition term + ABHA address
+
     def test_number_word_gated_without_trigger(self):
         # 16 number-words but NO trigger word nearby -> must NOT be flagged
         words = " ".join(["four", "one", "one", "one", "one", "one", "one", "one",

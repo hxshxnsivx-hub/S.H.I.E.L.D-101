@@ -70,6 +70,7 @@ DOB = _register(PIIClass("DOB", "Date of birth", "contact", Sensitivity.S1, Acti
 
 # --- Sensitive-category / biometric ----------------------------------------
 ABHA = _register(PIIClass("ABHA", "ABHA health ID / record", "health", Sensitivity.S3, Action.BLOCK, None))
+HEALTH = _register(PIIClass("HEALTH", "Health data (condition / ABHA address)", "health", Sensitivity.S3, Action.BLOCK, None))
 BIOMETRIC = _register(PIIClass("BIOMETRIC", "Face / fingerprint", "biometric", Sensitivity.S3, Action.BLOCK, None))
 VOICEPRINT = _register(PIIClass("VOICEPRINT", "Voiceprint (call audio)", "biometric", Sensitivity.S3, Action.ESCALATE, None))
 

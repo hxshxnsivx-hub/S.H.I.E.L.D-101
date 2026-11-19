@@ -23,6 +23,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kavach import validators as v  # noqa: E402
 from kavach.ner import NAMES  # noqa: E402
+from kavach.gazetteers import CITIES, HEALTH_TERMS  # noqa: E402
 
 DIGIT_WORDS = {
     "en": ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"],
@@ -37,18 +38,21 @@ TEMPLATES = {
         "Transfer to account {BANK} IFSC {IFSC}, my UPI is {UPI}.",
         "My card number is {CARD}, confirm the payment.",
         "My name is {NAME}, email {EMAIL}, mobile {PHONE}.",
+        "Patient {NAME} from {ADDRESS}, diagnosed {HEALTH}, ABHA {ABHA}.",
     ],
     "hi": [
         "मेरा Aadhaar {AADHAAR} है aur PAN {PAN} update kar do.",
         "Payment {UPI} par bhej do, card {CARD} use mat karna.",
         "Account {BANK} IFSC {IFSC} me paisa daal do bhaiya.",
         "मेरा नाम {NAME} hai, email {EMAIL}, mobile number {PHONE}.",
+        "मरीज {NAME}, पता {ADDRESS}, {HEALTH} की शिकायत, ABHA {ABHA}.",
     ],
     "ta": [
         "என் Aadhaar {AADHAAR}, PAN {PAN} ஐ update பண்ணுங்க.",
         "UPI {UPI} க்கு அனுப்புங்க, card {CARD} வேண்டாம்.",
         "Account {BANK} IFSC {IFSC} ல பணம் போடுங்க.",
         "என் பெயர் {NAME}, email {EMAIL}, mobile number {PHONE}.",
+        "நோயாளி {NAME}, ஊர் {ADDRESS}, {HEALTH}, ABHA {ABHA}.",
     ],
 }
 
@@ -56,9 +60,11 @@ PLACEHOLDER_CLASS = {
     "AADHAAR": "AADHAAR", "PAN": "PAN", "BANK": "BANK_ACCOUNT",
     "IFSC": "IFSC", "UPI": "UPI_VPA", "CARD": "CARD_PAN",
     "NAME": "NAME", "EMAIL": "EMAIL", "PHONE": "PHONE",
+    "ADDRESS": "ADDRESS", "HEALTH": "HEALTH", "ABHA": "HEALTH",
 }
 
 _EMAIL_DOMAINS = ["gmail.com", "yahoo.in", "outlook.com", "rediffmail.com"]
+_ABHA_HANDLES = ["abdm", "sbx", "ndhm"]
 
 
 def _rand_aadhaar() -> str:
@@ -110,10 +116,24 @@ def _rand_phone() -> str:
     return random.choice("6789") + "".join(random.choice(string.digits) for _ in range(9))
 
 
+def _rand_address() -> str:
+    return random.choice(CITIES)
+
+
+def _rand_health() -> str:
+    return random.choice(HEALTH_TERMS)
+
+
+def _rand_abha() -> str:
+    local = "".join(random.choice(string.ascii_lowercase) for _ in range(random.randint(4, 8)))
+    return f"{local}@{random.choice(_ABHA_HANDLES)}"
+
+
 GENERATORS = {
     "AADHAAR": _rand_aadhaar, "PAN": _rand_pan, "BANK": _rand_bank,
     "IFSC": _rand_ifsc, "UPI": _rand_upi, "CARD": _rand_card,
     "NAME": _rand_name, "EMAIL": _rand_email, "PHONE": _rand_phone,
+    "ADDRESS": _rand_address, "HEALTH": _rand_health, "ABHA": _rand_abha,
 }
 
 # classes whose value is purely numeric (eligible for number-word rendering)
