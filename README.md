@@ -15,6 +15,8 @@ code-mixed (Hindi / Tamil / English) PII-leak benchmark.
 | `kavach/taxonomy.py` | The PII/credential registry: class, group, sensitivity (S1–S3), default action, and the validator each uses. |
 | `kavach/validators.py` | Deterministic, zero-dependency validators — the high-precision first pass that keeps false positives low: Verhoeff (Aadhaar), Luhn (card), PAN, IFSC, GSTIN checksum, UPI VPA. |
 | `tests/test_validators.py` | Unit tests (19, all green). |
+| `kavach/ner.py` | Heuristic NER (gazetteer + trigger phrases) for names — the dependency-free default. |
+| `kavach/ner_model.py` | Optional MuRIL-class transformer NER backend (names + addresses), with graceful fallback. |
 | `benchmark/generate.py` | Synthetic code-mixed benchmark generator → labelled JSONL with ground-truth spans, in native-digit and number-word forms across Hi/Ta/En. |
 
 ## Why deterministic-first
@@ -41,6 +43,24 @@ v.luhn_validate("4111111111111111")
 v.is_gstin("27AAPFU0939F1ZV")
 v.is_upi_vpa("ravi@okhdfcbank")
 ```
+
+### Detection, with the optional MuRIL NER
+
+```python
+from kavach.detect import Detector
+
+Detector().scan(text)                       # deterministic + heuristic NER (no deps)
+
+# transformer NER backend (pip install "kavach[ner]"):
+from kavach.ner_model import TransformerNER
+Detector(ner_backend=TransformerNER()).scan(text)   # catches out-of-gazetteer names + addresses
+```
+
+The backend defaults to an ungated multilingual NER so it runs out of the box.
+For best Indic-script coverage use MuRIL's `ai4bharat/IndicNER` — a **gated** HF
+repo: request access, `huggingface-cli login`, then
+`TransformerNER(model_id="ai4bharat/IndicNER")`. Run the model test with
+`KAVACH_TEST_NER=1 python -m unittest discover -s tests -p "test_*.py"`.
 
 ## Roadmap (districts)
 

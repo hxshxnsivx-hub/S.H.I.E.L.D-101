@@ -62,7 +62,15 @@ def _has_trigger(text: str, start: int, window: int = 60) -> bool:
 
 
 class Detector:
-    """Scans text and returns the PII/credential entities it finds."""
+    """Scans text and returns the PII/credential entities it finds.
+
+    ``ner_backend`` is an object with ``.detect(text) -> [(cls, value, start,
+    end, conf)]`` (e.g. ``kavach.ner_model.TransformerNER``). When omitted, the
+    dependency-free heuristic name detector is used.
+    """
+
+    def __init__(self, ner_backend=None):
+        self._ner = ner_backend
 
     def scan(self, text: str) -> list[Detection]:
         dets: list[Detection] = []
@@ -106,10 +114,15 @@ class Detector:
             if cls:
                 take(Detection(cls, text[s:e], canon, s, e, round(conf - 0.05, 2), "number_word"))
 
-        # 4) heuristic NER — names (addresses / health terms to follow; MuRIL swap-in)
-        for value, s, e, conf in ner.detect_names(text):
-            if not overlaps(s, e):
-                take(Detection("NAME", value, value, s, e, conf, "ner_stub"))
+        # 4) NER layer — MuRIL backend if provided, else heuristic names
+        if self._ner is not None:
+            for cls, value, s, e, conf in self._ner.detect(text):
+                if not overlaps(s, e):
+                    take(Detection(cls, value, value, s, e, conf, "ner_model"))
+        else:
+            for value, s, e, conf in ner.detect_names(text):
+                if not overlaps(s, e):
+                    take(Detection("NAME", value, value, s, e, conf, "ner_stub"))
 
         dets.sort(key=lambda d: d.start)
         return dets
