@@ -1,0 +1,22 @@
+[project]
+name = "kavach"
+version = "0.0.1"
+description = "Agent data-firewall: Indian PII & credential detection and governance (code-mixed Hindi/Tamil/English)"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Kavach" }]
+license = { text = "Apache-2.0" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["kavach"]
+
+[tool.ruff]
+line-length = 110
