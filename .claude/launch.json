@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kavach-console",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "kavach.console.server"],
+      "port": 8765
+    }
+  ]
+}

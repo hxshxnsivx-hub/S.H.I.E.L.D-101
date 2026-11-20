@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kavach Console</title>
+<style>
+  :root{
+    --bg:#0f1115;--panel:#171a20;--panel2:#1e222a;--ink:#eef1f5;--ink2:#a4adbb;--line:#2a2f39;
+    --accent:#7aa2ff;--allow:#49c17e;--mask:#e7b84a;--tokenize:#22d3ee;--escalate:#b79cff;--block:#e4785c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  }
+  @media(prefers-color-scheme:light){:root{
+    --bg:#f6f7f9;--panel:#fff;--panel2:#eef1f5;--ink:#15181d;--ink2:#4a525e;--line:#e2e6eb;
+    --accent:#2563eb;--allow:#1f9d55;--mask:#b26b00;--tokenize:#0891b2;--escalate:#7c3aed;--block:#c0472b;
+    --shadow:0 1px 2px rgba(20,24,29,.06),0 8px 28px rgba(20,24,29,.08);
+  }}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  header{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+  header .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--tokenize));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
+  header h1{font-size:17px;margin:0;letter-spacing:-.01em}
+  header .tag{font-size:11.5px;color:var(--ink2);margin-left:auto}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1200px;margin:0 auto;padding:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin:0 0 10px}
+  textarea{width:100%;min-height:120px;resize:vertical;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:11px;font:13px/1.5 ui-monospace,Menlo,monospace}
+  .row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  select,button{font:13px inherit;border-radius:9px;border:1px solid var(--line);padding:9px 12px}
+  select{background:var(--panel2);color:var(--ink)}
+  button.go{background:var(--accent);color:#fff;border:none;font-weight:650;cursor:pointer;padding:9px 18px}
+  button.go:active{transform:translateY(1px)}
+  .trustline{font-size:12px;color:var(--ink2)}
+  .trustbadge{font-weight:700;padding:1px 7px;border-radius:6px;border:1px solid var(--line)}
+  .status{display:inline-block;font-weight:700;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--line)}
+  .st-clean{color:var(--allow)} .st-sanitized{color:var(--tokenize)} .st-needs_review{color:var(--escalate)} .st-blocked_parts{color:var(--block)}
+  .io{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;font:12.5px/1.6 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;margin-top:8px}
+  .io .lbl{color:var(--ink2);font-family:inherit;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  .chips{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+  .chip{display:grid;grid-template-columns:96px 70px 1fr auto;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 10px;font-size:12.5px}
+  .act{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+  .a-allow{color:var(--allow)} .a-mask{color:var(--mask)} .a-tokenize{color:var(--tokenize)} .a-escalate{color:var(--escalate)} .a-block{color:var(--block)}
+  .cls{font-weight:650}.reason{color:var(--ink2);font-size:11.5px}.conf{color:var(--ink2);font-variant-numeric:tabular-nums}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+  .stat b{font-size:18px;display:block}.stat span{font-size:10.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+  .intact{color:var(--allow);font-weight:700}.broken{color:var(--block);font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+  th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--ink2);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+  .muted{color:var(--ink2);font-size:12px}
+  @media(max-width:840px){.wrap{grid-template-columns:1fr}.chip{grid-template-columns:1fr auto}.reason{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">K</div>
+  <h1>Kavach <span class="muted" style="font-weight:400">· agent data-firewall</span></h1>
+  <span class="tag">DPDP · RBI FREE-AI · code-mixed Hi/Ta/En</span>
+</header>
+
+<div class="wrap">
+  <!-- LEFT: input -->
+  <section class="card">
+    <h2>Outbound payload → tool</h2>
+    <textarea id="text">Customer Priya from Chennai, Aadhaar 234567890124, UPI ravi@okhdfcbank, card 4111111111111111, OTP 123456, diagnosis diabetes.</textarea>
+    <div class="row">
+      <select id="dest"></select>
+      <button class="go" id="go">Guard →</button>
+      <span class="trustline" id="trustline"></span>
+    </div>
+    <h2 style="margin-top:18px">Result <span id="status"></span></h2>
+    <div class="io"><span class="lbl">in</span><br><span id="in"></span></div>
+    <div class="io"><span class="lbl">out · sent to tool</span><br><span id="out"></span></div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <!-- RIGHT: audit -->
+  <section class="card">
+    <h2>Audit &amp; DPDP evidence</h2>
+    <div class="stats">
+      <div class="stat"><b id="s-events">0</b><span>events</span></div>
+      <div class="stat"><b id="s-report">0</b><span>reportable</span></div>
+      <div class="stat"><b id="s-chain">–</b><span>chain</span></div>
+      <div class="stat"><b id="s-lat">–</b><span>last ms</span></div>
+    </div>
+    <h2>Recent decisions</h2>
+    <table><thead><tr><th>#</th><th>dest</th><th>status</th><th>PII</th><th>hash</th></tr></thead>
+    <tbody id="recent"></tbody></table>
+    <h2 style="margin-top:16px">Policy / registry</h2>
+    <div class="muted" id="classes"></div>
+  </section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const ACT=["allow","mask","tokenize","escalate","block"];
+let META={};
+
+async function loadMeta(){
+  META=await (await fetch("/api/meta")).json();
+  const d=$("#dest"); d.innerHTML="";
+  META.destinations.forEach(x=>{const o=document.createElement("option");o.value=x.name;o.textContent=`${x.name} · ${x.trust}`;d.appendChild(o);});
+  trustLine();
+  $("#classes").textContent=`${META.classes.length} PII classes · ` + [...new Set(META.classes.map(c=>c.group))].join(" · ");
+  refreshAudit();
+}
+function trustLine(){
+  const dest=$("#dest").value;
+  const t=(META.destinations.find(x=>x.name===dest)||{}).trust||"unknown";
+  $("#trustline").innerHTML=`trust: <span class="trustbadge">${t}</span>`;
+}
+$("#dest")&&$("#dest").addEventListener("change",trustLine);
+
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+async function guard(){
+  const text=$("#text").value, destination=$("#dest").value;
+  const r=await (await fetch("/api/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text,destination})})).json();
+  $("#status").innerHTML=`<span class="status st-${r.status}">${r.status}</span>`;
+  $("#in").textContent=text;
+  $("#out").textContent=r.sanitized;
+  $("#chips").innerHTML=r.decisions.map(d=>`<div class="chip">
+      <span class="act a-${d.action}">${d.action}</span>
+      <span class="cls">${d.cls}</span>
+      <span class="reason">${esc(d.reason)}</span>
+      <span class="conf">${d.confidence}</span></div>`).join("")||'<div class="muted">no PII detected</div>';
+  $("#s-lat").textContent=r.latency_ms;
+  refreshAudit();
+}
+async function refreshAudit(){
+  const a=await (await fetch("/api/audit")).json();
+  $("#s-events").textContent=a.report.events;
+  $("#s-report").textContent=a.report.reportable_events;
+  $("#s-chain").innerHTML=a.report.chain_intact?'<span class="intact">✓</span>':'<span class="broken">✗</span>';
+  $("#recent").innerHTML=a.recent.map(e=>`<tr><td>${e.seq}</td><td>${e.destination}</td>
+      <td><span class="status st-${e.status}" style="padding:1px 7px">${e.status}</span></td>
+      <td>${e.entities}</td><td class="muted">${e.hash}</td></tr>`).join("");
+}
+$("#go").addEventListener("click",guard);
+loadMeta();
+</script>
+</body>
+</html>
