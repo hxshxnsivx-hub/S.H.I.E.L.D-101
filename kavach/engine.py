@@ -46,11 +46,13 @@ class Result:
 
 class DecisionEngine:
     def __init__(self, detector: Detector | None = None, policy: Policy | None = None,
-                 trust: TrustRegistry | None = None, vault: TokenVault | None = None):
+                 trust: TrustRegistry | None = None, vault: TokenVault | None = None,
+                 audit=None):
         self.detector = detector or Detector()
         self.policy = policy or Policy()
         self.trust = trust or TrustRegistry()
         self.vault = vault or TokenVault()
+        self.audit = audit
 
     def _mask(self, cls: str, value: str) -> str:
         if cls in _FULL_MASK:
@@ -109,4 +111,6 @@ class DecisionEngine:
                 for ed in decisions
             ],
         }
+        if self.audit is not None:
+            self.audit.record(evidence)
         return Result(destination, trust.value, status, sanitized, decisions, evidence, latency_ms)

@@ -20,6 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import wraps
 
+from .audit import AuditLog
 from .detect import Detector
 from .engine import DecisionEngine, Result
 from .policy import Policy, Trust, TrustRegistry
@@ -50,13 +51,15 @@ class Kavach:
     """Drop-in firewall facade for an AI agent / application."""
 
     def __init__(self, trust=None, policy: Policy | None = None,
-                 ner_backend=None, mode: str = "sanitize"):
+                 ner_backend=None, mode: str = "sanitize", audit: AuditLog | None = None):
         if not isinstance(trust, TrustRegistry):
             trust = TrustRegistry(trust or {})
+        self.audit = audit if audit is not None else AuditLog()
         self.engine = DecisionEngine(
             detector=Detector(ner_backend=ner_backend),
             policy=policy or Policy(),
             trust=trust,
+            audit=self.audit,
         )
         if mode not in ("sanitize", "block"):
             raise ValueError("mode must be 'sanitize' or 'block'")
