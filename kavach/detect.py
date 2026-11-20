@@ -34,6 +34,8 @@ _PAN = re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b")
 _IFSC = re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b")
 _GSTIN = re.compile(r"\b[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9A-Z]Z[0-9A-Z]\b")
 _DIGITS = re.compile(r"\d{10,19}")
+_OTP = re.compile(r"\b\d{4,6}\b")
+_OTP_TRIGGERS = {"otp", "code", "password", "pwd", "pin", "ओटीपी", "ஓடிபி"}
 
 # Context triggers that license a spoken number-word run as a real identifier.
 # Without a nearby trigger, "one four ..." in ordinary prose is NOT treated as PII.
@@ -119,6 +121,14 @@ class Detector:
                     cls, conf = "BANK_ACCOUNT", 0.55
             if cls:
                 take(Detection(cls, m.group(), canon, m.start(), m.end(), conf, "digits"))
+
+        # 2b) OTP / short secret codes, context-gated (secret -> always blocked by D3)
+        for m in _OTP.finditer(text):
+            if overlaps(m.start(), m.end()):
+                continue
+            pre = text[max(0, m.start() - 15):m.start()].lower()
+            if any(t in pre for t in _OTP_TRIGGERS):
+                take(Detection("OTP", m.group(), m.group(), m.start(), m.end(), 0.85, "regex"))
 
         # 3) spoken number-word runs (the Indic code-mixed case), context-gated
         for canon, s, e in nz.number_word_spans(text):
