@@ -17,23 +17,27 @@ from urllib.parse import urlparse
 # allow running as a plain file (python .../server.py) from any cwd
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+from kavach import __version__
 from kavach.audit import AuditLog
+from kavach.config import build_policy, build_trust, load_config
 from kavach.detect import Detector
 from kavach.engine import DecisionEngine
-from kavach.policy import Policy, Trust, TrustRegistry
+from kavach.policy import Trust, TrustRegistry
 from kavach.taxonomy import REGISTRY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PORT = int(os.environ.get("KAVACH_PORT", "8765"))
+HOST = os.environ.get("KAVACH_HOST", "127.0.0.1")
 
-AUDIT = AuditLog()
-TRUST = TrustRegistry({
+_CFG = load_config()
+AUDIT = AuditLog(_CFG.get("audit_path"))
+TRUST = build_trust(_CFG, TrustRegistry({
     "crm_external_api": Trust.UNTRUSTED,
     "analytics_vendor": Trust.UNTRUSTED,
     "internal_crm": Trust.INTERNAL,
     "core_banking": Trust.TRUSTED,
-})
-ENGINE = DecisionEngine(detector=Detector(), policy=Policy(), trust=TRUST, audit=AUDIT)
+}))
+ENGINE = DecisionEngine(detector=Detector(), policy=build_policy(_CFG), trust=TRUST, audit=AUDIT)
 
 
 def _result_json(r):
@@ -91,6 +95,8 @@ class Handler(BaseHTTPRequestHandler):
         if path in ("/", "/index.html"):
             with open(os.path.join(HERE, "index.html"), "rb") as fh:
                 self._send(fh.read(), ctype="text/html")
+        elif path == "/health":
+            self._send({"status": "ok", "version": __version__, "events": len(ENGINE.audit)})
         elif path == "/api/meta":
             self._send(_meta_json())
         elif path == "/api/audit":
@@ -113,8 +119,8 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"Kavach console on http://localhost:{PORT}")
+    srv = ThreadingHTTPServer((HOST, PORT), Handler)
+    print(f"Kavach console on http://{HOST}:{PORT}")
     srv.serve_forever()
 
 

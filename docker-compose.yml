@@ -1,0 +1,17 @@
+services:
+  kavach:
+    build: .
+    image: kavach:latest
+    ports:
+      - "8765:8765"
+    environment:
+      - KAVACH_HOST=0.0.0.0
+      - KAVACH_PORT=8765
+      - KAVACH_CONFIG=/config/kavach.config.json
+    volumes:
+      - ./deploy/kavach.config.json:/config/kavach.config.json:ro
+      - kavach_audit:/data
+    restart: unless-stopped
+
+volumes:
+  kavach_audit:

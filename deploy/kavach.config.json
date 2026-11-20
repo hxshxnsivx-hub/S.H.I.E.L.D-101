@@ -1,0 +1,13 @@
+{
+  "trust": {
+    "crm_external_api": "untrusted",
+    "analytics_vendor": "untrusted",
+    "internal_crm": "internal",
+    "core_banking": "trusted"
+  },
+  "policy": {
+    "version": "onprem-v1",
+    "escalate_below": 0.6
+  },
+  "audit_path": "/data/audit.jsonl"
+}
