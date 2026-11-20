@@ -63,6 +63,12 @@ class TestDetect(unittest.TestCase):
         self.assertIn("NAME", classes("My name is Priya and I need help"))
         self.assertIn("NAME", classes("என் பெயர் Karthik"))
 
+    def test_card_vs_bank_context(self):
+        self.assertIn("CARD_PAN", classes("pay with card 4111111111111111"))
+        found = {d.cls for d in Detector().scan("transfer to account 4111111111111111")}
+        self.assertIn("BANK_ACCOUNT", found)
+        self.assertNotIn("CARD_PAN", found)
+
     def test_health_and_address(self):
         found = classes("patient from Chennai has diabetes, ABHA ravi@abdm")
         self.assertIn("ADDRESS", found)   # city gazetteer

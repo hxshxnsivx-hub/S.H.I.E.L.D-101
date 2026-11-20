@@ -45,6 +45,11 @@ _TRIGGERS = {
 }
 
 
+# Context words that disambiguate a 16-digit number that passes Luhn by accident.
+_CARD_POS = {"card", "debit", "credit", "कार्ड", "கார்டு"}
+_CARD_NEG = {"account", "bank", "acct", "खाता", "கணக்கு", "a/c"}
+
+
 def _classify_number(canon: str) -> tuple[str | None, float]:
     n = len(canon)
     if n == 10 and canon[0] in "6789":
@@ -106,6 +111,12 @@ class Detector:
                 continue
             canon = m.group()
             cls, conf = _classify_number(canon)
+            # context disambiguation: a Luhn-passing account number near
+            # "account"/"bank" (and not "card") is a bank account, not a card.
+            if cls == "CARD_PAN":
+                pre = text[max(0, m.start() - 40):m.start()].lower()
+                if any(w in pre for w in _CARD_NEG) and not any(w in pre for w in _CARD_POS):
+                    cls, conf = "BANK_ACCOUNT", 0.55
             if cls:
                 take(Detection(cls, m.group(), canon, m.start(), m.end(), conf, "digits"))
 
@@ -127,6 +138,9 @@ class Detector:
         for value, s, e, conf in ner.detect_names(text):
             ner_hits.append(("NAME", value, s, e, conf, "ner_heuristic"))
         for cls, value, s, e, conf, method in sorted(ner_hits, key=lambda h: -h[4]):
+            # a known city mislabelled as a person is an address
+            if cls == "NAME" and value.lower() in gz.CITY_SET:
+                cls = "ADDRESS"
             if not overlaps(s, e):
                 take(Detection(cls, value, value, s, e, conf, method))
 

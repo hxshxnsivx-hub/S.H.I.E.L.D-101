@@ -44,6 +44,17 @@ class TestUnion(unittest.TestCase):
         self.assertIn(("NAME", "Venkatachalapathy"), found)  # from the model
         self.assertIn(("NAME", "Ravi"), found)               # gazetteer union recovered it
 
+    def test_city_mislabelled_as_person_becomes_address(self):
+        class StubNER:
+            def detect(self, text):
+                i = text.find("Chennai")
+                return [("NAME", "Chennai", i, i + 7, 0.9)]
+
+        det = Detector(ner_backend=StubNER())
+        found = {(d.cls, d.value) for d in det.scan("shipped from Chennai today")}
+        self.assertIn(("ADDRESS", "Chennai"), found)
+        self.assertNotIn(("NAME", "Chennai"), found)
+
 
 @unittest.skipUnless(os.environ.get("KAVACH_TEST_NER"), "set KAVACH_TEST_NER=1 to run the MuRIL model")
 class TestMurilModel(unittest.TestCase):
