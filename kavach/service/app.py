@@ -110,5 +110,7 @@ try:  # build the ASGI app only if FastAPI is present
     def metrics():
         return Response(metrics_text(), media_type="text/plain")
 
-except ImportError:  # pragma: no cover
+except Exception:  # pragma: no cover
+    # FastAPI absent OR an incompatible fastapi/starlette combo — the service is
+    # optional, so degrade gracefully; the plain do_* core still works.
     app = None
