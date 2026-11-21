@@ -62,7 +62,18 @@ call_tool = guard_call_tool(kav, call_tool)
 # OpenAI function-calling — guard the tool call before running it
 from kavach.integrations.openai import guard_tool_call
 name, safe_args, _ = guard_tool_call(kav, tool_call)
+
+# Any other framework (CrewAI / AutoGen / LlamaIndex / custom)
+from kavach.integrations.generic import guard_callable
+tool = guard_callable(kav, tool_fn, destination="crm_api")
+
+# Voice agents (STT/TTS)
+from kavach.integrations.voice import guard_stt, guard_tts
 ```
+
+Non-Python agents call the **service** (`pip install "kavach[service]"`,
+`uvicorn kavach.service.app:app`) via the **JS/TS client** (`clients/js/`).
+
 
 Runnable: `examples/agent_integration.py`, `examples/langchain_integration.py`,
 `examples/mcp_integration.py`, `examples/openai_integration.py`.
@@ -109,11 +120,18 @@ MuRIL NER is the only networked piece. `docker build . && docker run -p 8765:876
 
 ## Status
 
-Built: D7, D2, D3, D1, D5, D6, D8 + a D4 slice. **Remaining / honest caveats:**
-numbers are on synthetic data; the gazetteer flatters known names/cities while
-the real transformer NER is the honest generaliser; true Tamil/Hindi-*script*
-quality needs IndicNER access (gated) or pilot data; the production vault
-(KMS/HSM) and a hardened ASGI server are not done. See `kavach-districts` plan.
+**Built:** detection (11 classes, 5 languages' number-words), decision engine,
+token vault (RBAC + KMS seam), tamper-evident audit + SIEM export, SDK +
+LangChain/MCP/OpenAI/generic/voice integrations + JS/TS client, React console,
+FastAPI service + Prometheus metrics, Docker (multi-stage) + Helm, CI with a
+benchmark quality gate.
+
+**Remaining — needs data/accounts/hardware, not code:** numbers are on
+**synthetic data**; true Tamil/Hindi-*script* quality needs IndicNER access
+(gated) or a **real labelled pilot corpus** (under DPA); a real **KMS/HSM**
+backend, **SOC2/pen-test**, publishing to **PyPI/npm**, and design partners are
+external steps. (The gazetteer flatters known names/cities on the benchmark; the
+transformer NER is the honest generaliser.)
 
 ## License
 
