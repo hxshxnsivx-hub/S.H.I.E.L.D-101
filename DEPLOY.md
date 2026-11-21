@@ -27,6 +27,19 @@ docker run --rm -p 8765:8765 kavach:latest
 docker compose up --build
 ```
 
+The Docker image is multi-stage: it builds the React console (`web/`) and serves
+it from the Python runtime, so the container ships with the full UI.
+
+## Kubernetes (Helm)
+
+```bash
+helm install kavach deploy/helm --set image.repository=<your-registry>/kavach
+```
+
+The chart (`deploy/helm/`) runs multiple stateless replicas with `/health`
+readiness/liveness probes and a ClusterIP service. Front it with your ingress
+(TLS) and set `env.KAVACH_CONFIG` to a mounted policy file for on-prem.
+
 ## Configuration (no code changes)
 
 Point `KAVACH_CONFIG` at a JSON file to set the trust registry, policy and the

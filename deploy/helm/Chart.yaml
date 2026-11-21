@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kavach
+description: Kavach — the agent data-firewall (detect, decide, audit)
+type: application
+version: 0.1.0
+appVersion: "0.0.1"

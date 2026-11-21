@@ -1,9 +1,17 @@
-FROM python:3.12-slim
+# --- stage 1: build the React console ---
+FROM node:20-slim AS web
+WORKDIR /web
+COPY web/package*.json ./
+RUN npm install --no-audit --no-fund
+COPY web/ ./
+RUN npm run build
 
+# --- stage 2: python runtime (stdlib core; air-gap safe) ---
+FROM python:3.12-slim
 WORKDIR /app
 COPY . /app
+COPY --from=web /web/dist /app/web/dist
 
-# Core is stdlib-only; no network needed at build or run (air-gap safe).
 ENV KAVACH_HOST=0.0.0.0 \
     KAVACH_PORT=8765 \
     PYTHONUNBUFFERED=1
