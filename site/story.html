@@ -42,8 +42,8 @@
   .paper .lines{position:absolute;inset:0;
     background:repeating-linear-gradient(transparent 0 41px, var(--rule) 41px 42px);opacity:var(--rules,.55)}
   .paper .margin{position:absolute;top:0;bottom:0;left:min(9%,120px);width:2px;background:var(--margin);opacity:calc(var(--rules,.55)*1.1)}
-  .paper .grain{position:absolute;inset:0;opacity:.5;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+  .paper .grain{position:absolute;inset:0;opacity:.28;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
   .paper .vig{position:absolute;inset:0;box-shadow:inset 0 0 180px rgba(90,70,40,.28)}
 
   /* ===== SPACE WORLD ===== */
@@ -57,7 +57,6 @@
   .scene{width:min(94vw,1000px);height:auto;overflow:visible}
   #sketch path, #sketch line{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
   .draw{stroke-dasharray:1;stroke-dashoffset:1}
-  .fillink{fill:var(--ink);stroke:none}
   .lab{font-family:"JetBrains Mono",monospace;fill:var(--ink);font-size:17px;font-weight:600;opacity:0}
   .cl{font-family:"Caveat",cursive;fill:var(--ink);font-size:26px;opacity:0}
 
@@ -104,7 +103,16 @@
   .btn.p{background:var(--accent);color:#fff}.btn.p:hover{background:var(--accent-2)}
   .btn.g{border-color:var(--hairline-2);color:var(--white)}.btn.g:hover{border-color:var(--sub);background:var(--surface-1)}
 
-  @media(max-width:640px){ .story{height:480vh} .write p{white-space:normal} }
+  @media(max-width:640px){
+    .story{height:480vh}
+    .write p{white-space:normal}
+    .scene{width:min(136vw,560px)}
+    .lab{font-size:21px} .cl{font-size:30px} .qmark{display:none}
+    .node{font-size:10px} .node.low{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .glow svg{animation:none} .hint .arw{animation:none}
+  }
 </style>
 </head>
 <body>
@@ -150,17 +158,20 @@
             <path class="draw" data-s="0.24" data-e="0.31" d="M680 388 l44 -16 l44 16 l-44 16 Z M680 388 v30 l44 16 v-30 M768 388 v30 l-44 16"/>
             <path class="draw" data-s="0.26" data-e="0.33" d="M650 452 l40 -14 l40 14 l-40 14 Z M650 452 v28 l40 14 v-28 M730 452 v28 l-40 14"/>
           </g>
-          <text class="lab" x="672" y="306" data-s="0.26" data-e="0.32">Aadhaar</text>
-          <text class="lab" x="700" y="394" data-s="0.28" data-e="0.34">card</text>
-          <text class="lab" x="664" y="458" data-s="0.30" data-e="0.36">OTP</text>
           <!-- worry clouds -->
           <path class="draw" data-s="0.30" data-e="0.38" d="M120 120 q-34 -44 22 -58 q10 -44 66 -28 q34 -38 80 -8 q50 -16 60 30 q44 12 16 54 q10 44 -46 40 q-22 34 -74 16 q-44 24 -82 -12 q-56 6 -46 -44 Z"/>
           <path class="draw" data-s="0.34" data-e="0.42" d="M470 92 q-28 -36 18 -48 q8 -36 54 -22 q28 -32 66 -8 q42 -12 50 26 q36 10 12 44 q8 36 -38 34 q-18 28 -60 12 q-36 20 -68 -10 q-46 4 -36 -36 Z"/>
-          <text class="cl" x="140" y="90"  data-s="0.33" data-e="0.40">What if it leaks?</text>
-          <text class="cl" x="498" y="66"  data-s="0.37" data-e="0.44">Who sees my data?</text>
-          <text class="lab" x="300" y="130" font-size="40" data-s="0.33" data-e="0.39">?</text>
           <!-- sketched shield (write phase) -->
           <path id="skshield" class="draw" data-s="0.40" data-e="0.52" d="M500 300 l54 22 v46 c0 36 -24 60 -54 70 c-30 -10 -54 -34 -54 -70 v-46 Z"/>
+        </g>
+        <!-- text kept OUT of the boil filter so words stay crisp -->
+        <g id="labels">
+          <text class="lab" x="672" y="306" data-s="0.26" data-e="0.32">Aadhaar</text>
+          <text class="lab" x="700" y="394" data-s="0.28" data-e="0.34">card</text>
+          <text class="lab" x="664" y="458" data-s="0.30" data-e="0.36">OTP</text>
+          <text class="cl" x="140" y="90"  data-s="0.33" data-e="0.40">What if it leaks?</text>
+          <text class="cl" x="498" y="66"  data-s="0.37" data-e="0.44">Who sees my data?</text>
+          <text class="lab qmark" x="300" y="130" font-size="40" data-s="0.33" data-e="0.39">?</text>
         </g>
       </svg>
     </div>
@@ -203,9 +214,9 @@ const lerp=(a,b,t)=>a+(b-a)*t;
 document.querySelectorAll('#sketch .draw').forEach(el=>{ try{el.setAttribute('pathLength','1');}catch(e){} });
 
 // ---- streaming locked nodes ----
-const nd=[['Aadhaar',16,24],['UPI',11,52],['card',19,80],['OTP',30,90],['PAN',84,22],['ABHA',89,52],['GSTIN',83,80],['phone',68,92]];
+const nd=[['Aadhaar',16,24,0],['UPI',11,52,0],['card',19,80,0],['OTP',30,90,1],['PAN',84,22,0],['ABHA',89,52,0],['GSTIN',83,80,0],['phone',68,92,1]];
 const nodesEl=document.getElementById('nodes');
-nd.forEach(([t,x,y])=>{const n=document.createElement('div');n.className='node';n.style.left=x+'%';n.style.top=y+'%';n.dataset.x=x;
+nd.forEach(([t,x,y,low])=>{const n=document.createElement('div');n.className='node'+(low?' low':'');n.style.left=x+'%';n.style.top=y+'%';n.dataset.x=x;
   n.innerHTML='<span class="lk">🔒</span><span class="tg">'+t+'</span>';nodesEl.appendChild(n);});
 
 // ---- refs ----
@@ -213,7 +224,8 @@ const story=document.querySelector('.story');
 const paper=document.getElementById('paper'), space=document.getElementById('space');
 const scenewrap=document.getElementById('scenewrap'), sketch=document.getElementById('sketch');
 const inks=[...document.querySelectorAll('#sketch .draw')];
-const labs=[...document.querySelectorAll('#sketch .lab, #sketch .cl')];
+const labelsG=document.getElementById('labels');
+const labs=[...document.querySelectorAll('#labels .lab, #labels .cl')];
 const skshield=document.getElementById('skshield');
 const write=document.getElementById('write'), w1=document.getElementById('w1'), w2=document.getElementById('w2');
 const glow=document.getElementById('glow'), nodes=[...document.querySelectorAll('.node')];
@@ -226,7 +238,7 @@ let MORPH=0; // shared with particles
 // ---- boiling ink (frame-by-frame hand-animation feel) ----
 const boilN=document.getElementById('boilN');
 const seeds=[2,9,17,27]; let si=0;
-if(!reduce) setInterval(()=>{ si=(si+1)%seeds.length; boilN.setAttribute('seed',seeds[si]); }, 115);
+if(!reduce) setInterval(()=>{ if(MORPH>0.9)return; si=(si+1)%seeds.length; boilN.setAttribute('seed',seeds[si]); }, 115);
 
 // ---- particle field (dust on paper -> stars in space) ----
 const cv=document.getElementById('dust'), ctx=cv.getContext('2d');
@@ -235,21 +247,19 @@ function resize(){ W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx
   P=Array.from({length: Math.round(W*H/16000)+40},()=>({x:Math.random()*W,y:Math.random()*H,
     r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.08,vy:-(Math.random()*.16+.03),tw:Math.random()*6.28})); }
 resize(); addEventListener('resize',resize);
-function particles(t){
+function particles(){
   ctx.clearRect(0,0,W,H);
   for(const p of P){
-    p.x+=p.vx; p.y+=p.vy; p.tw+=0.03;
+    if(!reduce){ p.x+=p.vx; p.y+=p.vy; p.tw+=0.03; }
     if(p.y<-6)p.y=H+6; if(p.x<-6)p.x=W+6; if(p.x>W+6)p.x=-6;
-    const star=MORPH, twk=0.6+0.4*Math.sin(p.tw);
+    const star=MORPH, twk=reduce?1:0.6+0.4*Math.sin(p.tw);
     const a=lerp(0.18,0.9,star)*twk;
     const R= star>.4? p.r*(1.3-0.3*Math.cos(p.tw)) : p.r;
     ctx.beginPath(); ctx.arc(p.x,p.y,R,0,6.283);
     ctx.fillStyle= star<.5 ? `rgba(70,58,34,${a*0.5})` : `rgba(190,200,240,${a})`;
     ctx.fill();
   }
-  if(star_glow) {}
 }
-let star_glow=false;
 
 // ---- scroll render ----
 function render(){
@@ -265,22 +275,22 @@ function render(){
   // parallax push-in on the scene
   const push=inv(0.36,0.56,p);
   scenewrap.style.transform=`perspective(1500px) rotateX(${lerp(0,7,push)}deg) scale(${lerp(1,1.14,push)})`;
-  // fade busy sketch toward the question, then gone at morph
-  sketch.style.opacity=lerp(1,0.16,inv(0.38,0.54,p))*(1-clamp(inv(0.60,0.76,p)));
+  // fade busy sketch + labels toward the question, then gone at morph
+  const sketchFade=lerp(1,0.16,inv(0.38,0.54,p))*(1-clamp(inv(0.60,0.76,p)));
+  sketch.style.opacity=sketchFade; labelsG.style.opacity=sketchFade;
 
-  // handwriting
-  const wv=inv(0.40,0.56,p);
-  write.style.opacity=clamp(wv*2.2)*(1-clamp(inv(0.58,0.68,p)));
-  w1.style.width=(clamp(inv(0.40,0.49,p))*100)+'%';
-  w2.style.width=(clamp(inv(0.48,0.56,p))*100)+'%';
+  // handwriting (typewriter on desktop, simple fade on mobile where it wraps)
+  write.style.opacity=clamp(inv(0.40,0.56,p)*2.2)*(1-clamp(inv(0.58,0.68,p)));
+  if(innerWidth<=640){ w1.style.width='auto'; w2.style.width='auto'; }
+  else { w1.style.width=(clamp(inv(0.40,0.49,p))*100)+'%'; w2.style.width=(clamp(inv(0.48,0.56,p))*100)+'%'; }
 
   // ===== morph (0.54 -> 0.80) =====
   const m=inv(0.54,0.80,p); MORPH=m;
   space.style.opacity=m;
   paper.style.opacity=1-clamp(inv(0.56,0.78,p));
   paper.style.setProperty('--rules',lerp(0.55,0,clamp(inv(0.54,0.70,p))));
-  // shield: sketch morphs into glow
-  const f0=inv(0.84,1,p);
+  // shield: sketch morphs into glow (begins as morph ends — no static beat)
+  const f0=inv(0.80,0.98,p);
   glow.style.opacity=clamp(inv(0.54,0.70,p));
   const gs=lerp(.6,1,clamp(inv(0.54,0.78,p)))*(1-f0*0.30);
   glow.style.transform=`translate(-50%, calc(-50% + ${f0*-150}px)) scale(${gs})`;
@@ -299,7 +309,7 @@ function render(){
   hint.style.color = p>0.58 ? 'var(--sub)' : 'var(--ink)';
 }
 
-function loop(t){ render(); particles(t); requestAnimationFrame(loop); }
+function loop(){ render(); particles(); requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
 addEventListener('scroll',render,{passive:true});
 </script>
