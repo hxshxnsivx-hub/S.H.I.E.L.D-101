@@ -11,6 +11,7 @@ dependencies = []
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.6"]
 ner = ["transformers>=4.44", "torch>=2.2", "sentencepiece>=0.2"]
+service = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
 
 [build-system]
 requires = ["hatchling"]
