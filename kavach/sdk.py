@@ -17,6 +17,7 @@ what it sends out without rebuilding anything:
 """
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from functools import wraps
 
@@ -96,6 +97,20 @@ class Kavach:
         if self.mode == "block" and (blocked or status == "needs_review"):
             raise KavachBlocked(gr)
         return gr
+
+    # --- async + batch (muscles) -------------------------------------------
+    async def aguard(self, text: str, destination: str, direction: str = "outbound") -> Result:
+        """Async guard — runs the (CPU-bound) engine in a thread."""
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, self.guard, text, destination, direction)
+
+    async def aguard_arguments(self, tool: str, arguments: dict, direction: str = "outbound") -> GuardResult:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, self.guard_arguments, tool, arguments, direction)
+
+    def guard_batch(self, items: list[tuple[str, str]]) -> list[Result]:
+        """Guard many (text, destination) pairs."""
+        return [self.guard(text, dest) for text, dest in items]
 
     # --- 3) decorator -------------------------------------------------------
     def guard_tool(self, destination: str | None = None):
