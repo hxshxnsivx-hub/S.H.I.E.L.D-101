@@ -1,23 +1,2 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-venv/
-dist/
-build/
-
-# benchmark output
-*.jsonl
-
-# OS / editor
-.DS_Store
-.idea/
-.vscode/
-
-# tool-specific config (not part of the product)
+.taste-skill/
 .claude/
-
-# web build
-web/node_modules/
-web/dist/
