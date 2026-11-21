@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en" data-type="software">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kavach — from a worry to a firewall</title>
+<meta name="description" content="Scroll the story: an AI agent about to leak private data, sketched on paper, transforms into Kavach — the agent data-firewall.">
+<meta name="theme-color" content="#010102">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%235e6ad2'/><text x='16' y='23' font-size='20' font-family='sans-serif' font-weight='700' fill='%23010102' text-anchor='middle'>K</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* paper world */
+    --paper:#fcfbef; --paper-2:#f6f4e2; --rule:#7fb5dd; --margin:#e0888a; --ink:#16304f; --cork:#b07d4e;
+    /* product world */
+    --canvas:#010102; --surface-1:#0f1011; --hairline:#23252a; --hairline-2:#34343a;
+    --ink-d:#f7f8f8; --sub:#8b97ab; --accent:#5e6ad2; --accent-2:#828fff; --success:#27a644;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--canvas);color:var(--ink-d);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .hand{font-family:"Caveat",cursive}
+  .mono{font-family:"JetBrains Mono",monospace}
+
+  /* progress rail */
+  .rail{position:fixed;top:0;left:0;height:3px;width:100%;z-index:50;background:transparent}
+  .rail i{display:block;height:100%;width:var(--pw,0%);background:linear-gradient(90deg,var(--rule),var(--accent));transition:width .1s linear}
+  .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;color:var(--ink);font-family:"Caveat",cursive;font-size:22px;opacity:var(--hint,1);transition:opacity .4s;pointer-events:none;mix-blend-mode:multiply}
+  .hint.dark{color:var(--sub);mix-blend-mode:normal}
+
+  /* ===== scroll story ===== */
+  .story{position:relative;height:620vh}
+  .stage{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;place-items:center}
+  /* cork + paper backdrops cross-fade */
+  .world{position:absolute;inset:0}
+  .world.cork{background:
+      radial-gradient(120% 80% at 50% 0,#c08f5a,transparent 60%),
+      repeating-conic-gradient(from 0deg at 50% 50%, #a9763f 0deg 2deg, #b07d4e 2deg 4deg) ,
+      #a9763f;
+    filter:saturate(.8)}
+  .world.space{opacity:0;background:radial-gradient(120% 90% at 50% 40%, #0b1022, #010102 70%)}
+  .stars{position:absolute;inset:0;opacity:0}
+  .stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#aab3d6;opacity:.7;animation:tw 3s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.25}50%{opacity:.9}}
+
+  /* sketchbook */
+  .book{position:relative;width:min(92vw,1180px);aspect-ratio:1200/700;transform-style:preserve-3d}
+  .pages{position:absolute;inset:0;border-radius:10px;
+    background:linear-gradient(90deg,var(--paper) 0 49.4%, #d8d6c4 49.4% 50.6%, var(--paper) 50.6% 100%);
+    box-shadow:0 40px 80px rgba(0,0,0,.45), inset 0 0 60px rgba(120,100,60,.12);
+    border:1px solid rgba(120,100,70,.4)}
+  .pages::before{content:"";position:absolute;inset:0;border-radius:10px;
+    background:repeating-linear-gradient(transparent 0 37px, var(--rule) 37px 38px);
+    opacity:var(--rules,1)}
+  .pages::after{content:"";position:absolute;top:0;bottom:0;left:9%;width:2px;background:var(--margin);opacity:calc(var(--rules,1)*.8)}
+  .spiral{position:absolute;top:-10px;left:0;right:0;height:20px;display:flex;justify-content:space-around;z-index:4}
+  .spiral i{width:14px;height:26px;border:2.5px solid #3a3a3a;border-radius:8px;background:transparent;transform:translateY(-6px)}
+
+  /* svg scene sits over the pages */
+  .scene{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .ink{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:1;stroke-dashoffset:1;filter:url(#rough)}
+  .ink.fillable{fill:var(--ink)}
+  .inklabel{font-family:"Caveat",cursive;fill:var(--ink);font-size:21px;opacity:0}
+  .cloudtext{font-family:"Caveat",cursive;fill:var(--ink);font-size:23px;opacity:0}
+  .sketchgroup{opacity:1}
+
+  /* handwriting + shield (write phase overlay) */
+  .write{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(88vw,760px);text-align:center;opacity:0;z-index:5}
+  .write p{font-family:"Caveat",cursive;color:var(--ink);font-size:clamp(30px,5vw,58px);margin:0 auto;line-height:1.2;
+    white-space:nowrap;overflow:hidden;width:0}
+
+  /* product shield (glow) */
+  .glowshield{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(.6);opacity:0;z-index:6;width:clamp(150px,20vw,230px)}
+  .glowshield svg{width:100%;height:auto;filter:drop-shadow(0 0 40px rgba(94,106,210,.6))}
+
+  /* streaming locked data nodes */
+  .nodes{position:absolute;inset:0;z-index:5;opacity:0}
+  .node{position:absolute;display:flex;align-items:center;gap:6px;transform:translate(-50%,-50%);
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:#c6ccff}
+  .node .lk{width:26px;height:26px;border-radius:50%;border:1px solid rgba(94,106,210,.6);
+    display:grid;place-items:center;background:rgba(94,106,210,.12);color:var(--accent-2)}
+  .node .tg{border:1px solid rgba(94,106,210,.35);border-radius:5px;padding:2px 7px;background:rgba(15,16,17,.7)}
+
+  /* UI chrome that appears in product world */
+  .chrome{position:absolute;inset:0;z-index:7;opacity:0;pointer-events:none}
+  .chrome .bar{position:absolute;top:0;left:0;right:0;height:46px;border-bottom:1px solid var(--hairline);
+    display:flex;align-items:center;gap:10px;padding:0 16px;background:rgba(10,12,16,.6);backdrop-filter:blur(8px)}
+  .chrome .dots{display:flex;gap:7px}.chrome .dots i{width:11px;height:11px;border-radius:50%}
+  .chrome .hex{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--sub)}
+  .chrome .side{position:absolute;top:46px;left:0;bottom:0;width:52px;border-right:1px solid var(--hairline);
+    display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:20px;background:rgba(10,12,16,.4)}
+  .chrome .side i{width:18px;height:18px;border-radius:5px;background:var(--hairline-2);opacity:.7}
+
+  /* final hero text */
+  .finale{position:absolute;left:0;right:0;bottom:7vh;z-index:8;text-align:center;opacity:0;transform:translateY(20px)}
+  .finale::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:130%;height:230%;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 58% at 50% 62%, rgba(1,1,2,.9), transparent 74%)}
+  .finale h1,.finale p{text-shadow:0 2px 26px rgba(1,1,2,.95),0 1px 3px rgba(1,1,2,.9)}
+  .finale h1{font-size:clamp(26px,4vw,46px);font-weight:600;letter-spacing:-.03em;margin:0 0 10px}
+  .finale h1 em{font-style:normal;color:var(--accent-2)}
+  .finale p{color:var(--sub);margin:0 auto 18px;max-width:52ch;font-size:clamp(14px,1.6vw,17px)}
+  .finale .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;border-radius:7px;padding:12px 20px;border:1px solid transparent;transition:transform .12s,background .15s,border-color .15s}
+  .btn:active{transform:translateY(1px)}
+  .btn.p{background:var(--accent);color:#fff}.btn.p:hover{background:var(--accent-2)}
+  .btn.g{border-color:var(--hairline-2);color:var(--ink-d)}.btn.g:hover{border-color:var(--sub);background:var(--surface-1)}
+
+  @media(max-width:640px){
+    .story{height:560vh}
+    .write p{white-space:normal}
+    .finale{bottom:4vh}
+  }
+  @media(prefers-reduced-motion:reduce){ .stars i{animation:none} }
+</style>
+</head>
+<body>
+
+<div class="rail"><i></i></div>
+<div class="hint">scroll ↓</div>
+
+<section class="story">
+  <div class="stage">
+    <!-- backdrops -->
+    <div class="world cork"></div>
+    <div class="world space"><div class="stars" id="stars"></div></div>
+
+    <!-- SKETCHBOOK -->
+    <div class="book" id="book">
+      <div class="pages"></div>
+      <div class="spiral" id="spiral"></div>
+
+      <svg class="scene" viewBox="0 0 1200 700" id="scene" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="7" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/></filter>
+          <linearGradient id="shg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#cfd3ff"/><stop offset="1" stop-color="#5e6ad2"/></linearGradient>
+        </defs>
+
+        <!-- ===== sketch group (worker + desk + monitor + data + clouds) ===== -->
+        <g class="sketchgroup" id="sketch">
+          <!-- desk + floor -->
+          <path class="ink" data-s="0.00" data-e="0.05" d="M150 520 H560"/>
+          <path class="ink" data-s="0.02" data-e="0.08" d="M300 400 H520 V520 H300 Z"/>
+          <!-- chair -->
+          <path class="ink" data-s="0.04" data-e="0.10" d="M210 360 q-18 80 -6 160 M186 520 h70 M210 450 h60"/>
+          <!-- person (side profile, seated, reaching to keyboard) -->
+          <path class="ink" data-s="0.05" data-e="0.13" d="M250 300 a22 22 0 1 1 0.1 0"/>
+          <path class="ink" data-s="0.07" data-e="0.16" d="M250 322 q-6 62 2 124 M250 352 q46 6 82 80"/>
+          <path class="ink" data-s="0.10" data-e="0.17" d="M252 446 q30 6 52 8 M302 454 l-2 60"/>
+          <!-- monitor on desk -->
+          <path class="ink" data-s="0.09" data-e="0.16" d="M360 300 h150 v110 h-150 Z M420 410 v26 M392 436 h86"/>
+          <path class="ink" data-s="0.12" data-e="0.18" d="M330 470 h110 l10 20 h-130 Z"/>
+
+          <!-- big monitor (right page) -->
+          <path class="ink" data-s="0.16" data-e="0.26" d="M720 180 h330 v220 h-330 Z"/>
+          <path class="ink" data-s="0.20" data-e="0.27" d="M845 400 v34 M800 440 h130 M870 230 h150 v120 h-150 Z"/>
+
+          <!-- data boxes + arrows flowing to the monitor -->
+          <g class="databoxes">
+            <path class="ink" data-s="0.14" data-e="0.22" d="M560 250 l40 -14 l40 14 l-40 14 Z M560 250 v34 l40 14 v-34 M640 250 v34 l-40 14"/>
+            <path class="ink" data-s="0.17" data-e="0.24" d="M560 330 l40 -14 l40 14 l-40 14 Z M560 330 v34 l40 14 v-34 M640 330 v34 l-40 14"/>
+            <path class="ink" data-s="0.20" data-e="0.27" d="M560 410 l40 -14 l40 14 l-40 14 Z M560 410 v34 l40 14 v-34 M640 410 v34 l-40 14"/>
+            <path class="ink" data-s="0.22" data-e="0.30" d="M650 258 q70 6 120 40 M650 338 q60 0 120 20 M650 430 q60 10 110 -20"/>
+            <path class="ink fillable" data-s="0.24" data-e="0.30" d="M760 288 l-14 -6 l2 12 Z"/>
+            <path class="ink fillable" data-s="0.25" data-e="0.31" d="M760 352 l-14 -4 l0 12 Z"/>
+            <path class="ink fillable" data-s="0.26" data-e="0.32" d="M752 404 l-12 6 l12 6 Z"/>
+          </g>
+          <text class="inklabel" x="568" y="256" data-s="0.22" data-e="0.28">Aadhaar</text>
+          <text class="inklabel" x="574" y="336" data-s="0.24" data-e="0.30">card</text>
+          <text class="inklabel" x="576" y="416" data-s="0.26" data-e="0.32">OTP</text>
+
+          <!-- worry thought clouds -->
+          <g class="clouds">
+            <path class="ink" data-s="0.28" data-e="0.36" d="M120 150 q-30 -40 20 -52 q10 -40 60 -26 q30 -34 72 -8 q46 -14 54 28 q40 10 14 48 q10 40 -42 36 q-20 30 -66 14 q-40 22 -74 -10 q-50 4 -42 -40 Z"/>
+            <path class="ink" data-s="0.32" data-e="0.40" d="M860 120 q-26 -34 18 -46 q8 -34 52 -22 q26 -30 64 -8 q40 -12 48 24 q34 10 12 42 q10 34 -36 32 q-18 26 -58 12 q-34 20 -66 -8 q-44 2 -34 -34 Z"/>
+            <path class="ink" data-s="0.34" data-e="0.42" d="M150 560 q-22 -30 16 -40 q8 -30 46 -20 q22 -26 56 -6 q34 -10 42 20 q30 10 10 38 q8 30 -32 28 q-16 22 -50 10 q-30 18 -58 -8 q-38 2 -30 -30 Z"/>
+          </g>
+          <text class="cloudtext" x="150" y="118" data-s="0.30" data-e="0.37">What if it leaks?</text>
+          <text class="cloudtext" x="892" y="92"  data-s="0.34" data-e="0.41">Who sees my data?</text>
+          <text class="cloudtext" x="178" y="536" data-s="0.36" data-e="0.43">Can I trust it?</text>
+          <text class="inklabel" x="300" y="150" font-size="44" data-s="0.30" data-e="0.36">?</text>
+          <text class="inklabel" x="640" y="130" font-size="50" data-s="0.33" data-e="0.39">?!?</text>
+        </g>
+      </svg>
+
+      <!-- handwriting (write phase) -->
+      <div class="write" id="write">
+        <p id="w1">What if something guarded</p>
+        <p id="w2">every tool call?</p>
+      </div>
+
+      <!-- sketched shield that will morph -->
+      <div class="glowshield" id="glow">
+        <svg viewBox="0 0 120 140"><path d="M60 6 L112 28 V70 C112 104 88 126 60 134 C32 126 8 104 8 70 V28 Z" fill="url(#shg)"/>
+          <path d="M60 6 L112 28 V70 C112 104 88 126 60 134 C32 126 8 104 8 70 V28 Z" fill="none" stroke="#cfd3ff" stroke-width="1.5" opacity=".6"/>
+          <path d="M60 10 V130" stroke="#010102" stroke-width="2" opacity=".18"/></svg>
+      </div>
+
+      <!-- streaming locked data (product world) -->
+      <div class="nodes" id="nodes"></div>
+    </div>
+
+    <!-- app chrome in product world -->
+    <div class="chrome" id="chrome">
+      <div class="bar"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>
+        <span class="hex" style="margin-left:6px">#010102</span><span class="hex" style="margin-left:auto">#5E6AD2</span></div>
+      <div class="side"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+
+    <!-- finale -->
+    <div class="finale" id="finale">
+      <h1>Your AI agents are leaking <em>private data.</em> Kavach stops it.</h1>
+      <p>The worry on the page is real. Kavach is the firewall that catches Aadhaar, UPI, cards and health data before an agent leaks it — and proves it with a DPDP audit.</p>
+      <div class="btns">
+        <a class="btn p" href="index.html">Enter the site →</a>
+        <a class="btn g" href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ---------- build decorative bits ----------
+const spiral = document.getElementById('spiral');
+for(let i=0;i<22;i++){ const s=document.createElement('i'); spiral.appendChild(s); }
+const stars = document.getElementById('stars');
+for(let i=0;i<90;i++){ const s=document.createElement('i'); s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.animationDelay=(Math.random()*3)+'s'; stars.appendChild(s); }
+
+// locked data nodes streaming toward the shield (product world)
+const nodeData=[['Aadhaar',18,26],['UPI',12,54],['card',20,78],['OTP',32,90],['PAN',80,24],['ABHA',88,50],['GSTIN',82,76],['phone',66,92]];
+const nodesEl=document.getElementById('nodes');
+nodeData.forEach(([t,x,y])=>{ const n=document.createElement('div'); n.className='node';
+  n.style.left=x+'%'; n.style.top=y+'%';
+  n.dataset.x=x;
+  n.innerHTML='<span class="lk">🔒</span><span class="tg">'+t+'</span>';
+  nodesEl.appendChild(n); });
+
+// ---------- scroll engine ----------
+const story=document.querySelector('.story');
+const stage=document.querySelector('.stage');
+const cork=document.querySelector('.world.cork');
+const space=document.querySelector('.world.space');
+const pages=document.querySelector('.pages');
+const book=document.getElementById('book');
+const sketch=document.getElementById('sketch');
+const inks=[...document.querySelectorAll('.ink')];
+const labels=[...document.querySelectorAll('.inklabel,.cloudtext')];
+const write=document.getElementById('write');
+const w1=document.getElementById('w1'), w2=document.getElementById('w2');
+const glow=document.getElementById('glow');
+const nodes=[...document.querySelectorAll('.node')];
+const chrome=document.getElementById('chrome');
+const finale=document.getElementById('finale');
+const railI=document.querySelector('.rail i');
+const hint=document.querySelector('.hint');
+
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const inv=(s,e,p)=>clamp((p-s)/(e-s));
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+function render(){
+  const rect=story.getBoundingClientRect();
+  const total=story.offsetHeight-window.innerHeight;
+  const p=clamp(-rect.top/total);
+  railI.style.setProperty('--pw',(p*100)+'%');
+
+  // self-drawing ink (draw phase p 0 -> 0.42)
+  for(const el of inks){
+    const s=+el.dataset.s, e=+el.dataset.e;
+    el.style.strokeDashoffset = 1 - inv(s,e,p);
+  }
+  for(const el of labels){
+    const s=+el.dataset.s, e=+el.dataset.e;
+    el.style.opacity = inv(s,e,p);
+  }
+
+  // book push-in + gentle tilt (p 0.42 -> 0.60)
+  const push=inv(0.42,0.60,p);
+  const sc=lerp(1,1.18,push);
+  const tilt=lerp(0,8,push);
+  book.style.transform=`perspective(1400px) rotateX(${tilt}deg) scale(${sc})`;
+
+  // fade the busy sketch as we move to the written question, then away entirely in the morph
+  sketch.style.opacity=lerp(1,0.14,inv(0.44,0.60,p)) * (1-clamp(inv(0.66,0.82,p)));
+
+  // handwriting reveal (p 0.46 -> 0.62)
+  const wv=inv(0.46,0.62,p);
+  write.style.opacity=clamp(wv*2);
+  w1.style.width=(clamp(inv(0.46,0.55,p))*100)+'%';
+  w2.style.width=(clamp(inv(0.54,0.62,p))*100)+'%';
+
+  // ---- MORPH (p 0.60 -> 0.84): paper -> space, shield glows, locks stream ----
+  const m=inv(0.60,0.84,p);
+  space.style.opacity=m;
+  cork.style.opacity=1-m;
+  stars.style.opacity=m;
+  pages.style.opacity=1-clamp(inv(0.62,0.82,p));
+  pages.style.setProperty('--rules',1-clamp(inv(0.60,0.74,p)));
+  write.style.filter=`opacity(${1-clamp(inv(0.62,0.72,p))})`;
+  // shield grows + glows out of the sketch; then rises and shrinks to clear the finale text
+  const f0=inv(0.86,1,p);
+  glow.style.opacity=clamp(inv(0.58,0.74,p));
+  const gs=lerp(.6,1,clamp(inv(0.58,0.80,p)))*(1-f0*0.30);
+  glow.style.transform=`translate(-50%, calc(-50% + ${f0*-150}px)) scale(${gs})`;
+  // streaming locked data nodes slide in from the sides toward center
+  nodesEl.style.opacity=clamp(inv(0.68,0.86,p));
+  const ns=inv(0.66,0.9,p);
+  nodes.forEach(n=>{ const x=+n.dataset.x; const dir=x<50?-1:1;
+    n.style.transform=`translate(calc(-50% + ${dir*lerp(240,0,ns)}px), calc(-50% + ${f0*-120}px))`; });
+  // app chrome fades in
+  chrome.style.opacity=clamp(inv(0.72,0.9,p));
+
+  // finale text (p 0.86 -> 1)
+  const f=inv(0.86,1,p);
+  finale.style.opacity=f;
+  finale.style.transform=`translateY(${lerp(20,0,f)}px)`;
+
+  // hint
+  hint.style.setProperty('--hint', p<0.04?1:0);
+  hint.classList.toggle('dark', p>0.6);
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
