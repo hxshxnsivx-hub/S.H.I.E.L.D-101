@@ -7,5 +7,7 @@
   "types": "src/index.d.ts",
   "files": ["src"],
   "license": "Apache-2.0",
-  "keywords": ["kavach", "pii", "dlp", "ai-agents", "dpdp"]
+  "keywords": ["kavach", "pii", "dlp", "ai-agents", "dpdp"],
+  "repository": { "type": "git", "url": "https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101.git", "directory": "clients/js" },
+  "publishConfig": { "access": "public" }
 }

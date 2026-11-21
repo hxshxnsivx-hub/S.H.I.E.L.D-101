@@ -4,9 +4,22 @@ version = "0.0.1"
 description = "Agent data-firewall: Indian PII & credential detection and governance (code-mixed Hindi/Tamil/English)"
 readme = "README.md"
 requires-python = ">=3.10"
-authors = [{ name = "Kavach" }]
+authors = [{ name = "Kavach contributors" }]
 license = { text = "Apache-2.0" }
+keywords = ["pii", "dlp", "ai-agents", "dpdp", "privacy", "security", "india", "mcp", "langchain"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Security",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Operating System :: OS Independent",
+]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101"
+Repository = "https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101"
+Issues = "https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.6"]
@@ -19,6 +32,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["kavach"]
+artifacts = ["kavach/console/index.html"]
 
 [tool.ruff]
 line-length = 110
