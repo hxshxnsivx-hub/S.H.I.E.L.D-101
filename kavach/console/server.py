@@ -9,6 +9,7 @@ decisions, and watch the tamper-evident DPDP audit panel update live.
 from __future__ import annotations
 
 import json
+import mimetypes
 import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -26,6 +27,7 @@ from kavach.policy import Trust, TrustRegistry
 from kavach.taxonomy import REGISTRY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+WEBDIST = os.path.join(os.path.dirname(os.path.dirname(HERE)), "web", "dist")  # built React app
 PORT = int(os.environ.get("KAVACH_PORT", "8765"))
 HOST = os.environ.get("KAVACH_HOST", "127.0.0.1")
 
@@ -90,17 +92,36 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _serve_dist(self, path) -> bool:
+        rel = "index.html" if path in ("/", "") else path.lstrip("/")
+        full = os.path.normpath(os.path.join(WEBDIST, rel))
+        if not full.startswith(os.path.normpath(WEBDIST)):
+            return False  # path-traversal guard
+        if os.path.isfile(full):
+            ctype = mimetypes.guess_type(full)[0] or "application/octet-stream"
+            with open(full, "rb") as fh:
+                self._send(fh.read(), ctype=ctype)
+            return True
+        idx = os.path.join(WEBDIST, "index.html")  # SPA fallback
+        if os.path.isfile(idx):
+            with open(idx, "rb") as fh:
+                self._send(fh.read(), ctype="text/html")
+            return True
+        return False
+
     def do_GET(self):
         path = urlparse(self.path).path
-        if path in ("/", "/index.html"):
-            with open(os.path.join(HERE, "index.html"), "rb") as fh:
-                self._send(fh.read(), ctype="text/html")
-        elif path == "/health":
+        if path == "/health":
             self._send({"status": "ok", "version": __version__, "events": len(ENGINE.audit)})
         elif path == "/api/meta":
             self._send(_meta_json())
         elif path == "/api/audit":
             self._send(_audit_json())
+        elif os.path.isdir(WEBDIST) and self._serve_dist(path):
+            return
+        elif path in ("/", "/index.html"):  # legacy fallback if React app not built
+            with open(os.path.join(HERE, "index.html"), "rb") as fh:
+                self._send(fh.read(), ctype="text/html")
         else:
             self._send({"error": "not found"}, 404)
 

@@ -17,3 +17,7 @@ build/
 
 # tool-specific config (not part of the product)
 .claude/
+
+# web build
+web/node_modules/
+web/dist/

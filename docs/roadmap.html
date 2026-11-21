@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kavach Roadmap</title>
+<style>
+  :root{
+    --bg:#0f1115;--panel:#171a20;--panel2:#1e222a;--ink:#eef1f5;--ink2:#a4adbb;--line:#2a2f39;
+    --accent:#7aa2ff;--good:#49c17e;--mid:#e7b84a;--late:#8b94a3;--heart:#ef7aa0;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  }
+  @media(prefers-color-scheme:light){:root{
+    --bg:#f6f7f9;--panel:#fff;--panel2:#eef1f5;--ink:#15181d;--ink2:#4a525e;--line:#e2e6eb;
+    --accent:#2563eb;--good:#1f9d55;--mid:#b26b00;--late:#6b7380;--heart:#b53b63;
+    --shadow:0 1px 2px rgba(20,24,29,.06),0 8px 28px rgba(20,24,29,.08);
+  }}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 16px 80px}
+  h1{font-size:28px;letter-spacing:-.02em;margin:0 0 4px}
+  .sub{color:var(--ink2);margin:0 0 14px;font-size:16px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-bottom:8px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .d-built{background:var(--good)}.d-next{background:var(--mid)}.d-later{background:var(--late)}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin:30px 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .part{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px}
+  .part h3{margin:0 0 2px;font-size:17px}
+  .part .role{color:var(--ink2);font-size:12.5px;margin:0 0 8px}
+  .part ul{margin:6px 0 0;padding-left:18px}
+  .part li{margin:4px 0;font-size:13.5px}
+  .tag{font-size:10px;font-weight:800;border-radius:5px;padding:1px 6px;margin-left:6px;text-transform:uppercase;letter-spacing:.03em}
+  .t-built{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good)}
+  .t-next{background:color-mix(in srgb,var(--mid) 22%,transparent);color:var(--mid)}
+  .t-later{background:color-mix(in srgb,var(--late) 24%,transparent);color:var(--late)}
+  .prio{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px}
+  .prio ol{margin:8px 0 0;padding-left:22px}.prio li{margin:7px 0;font-size:14.5px}
+  .prio b{color:var(--accent)}
+  .note{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--heart);border-radius:10px;padding:10px 14px;font-size:13.5px;margin:14px 0}
+  footer{margin-top:34px;color:var(--ink2);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Kavach — skeleton → production</h1>
+<p class="sub">The bones are built and they move (detect → decide → act → audit → attach). Here is how each "body part" turns the skeleton into a living, production-grade product.</p>
+<div class="legend">
+  <span><span class="dot d-built"></span>Built (skeleton)</span>
+  <span><span class="dot d-next"></span>Next (makes it a product)</span>
+  <span><span class="dot d-later"></span>Later (makes it a company)</span>
+</div>
+
+<h2>The body</h2>
+<div class="grid">
+
+  <div class="part" style="border-left-color:var(--accent)">
+    <h3>🦴 Skeleton <span class="tag t-built">built</span></h3>
+    <p class="role">the core that already moves</p>
+    <ul>
+      <li>11-class detection, 99.7% on synthetic data</li>
+      <li>decision engine · token vault · tamper-evident audit</li>
+      <li>SDK + LangChain / MCP / OpenAI adapters · console · Docker · 52 tests</li>
+    </ul>
+  </div>
+
+  <div class="part" style="border-left-color:var(--heart)">
+    <h3>🧠 Brain <span class="tag t-next">next</span></h3>
+    <p class="role">make it smart, not just correct — the moat</p>
+    <ul>
+      <li>IndicNER / fine-tuned MuRIL for real Tamil/Hindi script</li>
+      <li><b>the real labelled code-mixed corpus</b> from pilot data (DPA)</li>
+      <li>confidence calibration; more languages (Telugu, Bengali…)</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h3>💪 Muscles <span class="tag t-next">next</span></h3>
+    <p class="role">fast &amp; strong under load</p>
+    <ul>
+      <li>async + batching; streaming detection for voice</li>
+      <li>latency SLOs (p50/p95), load testing, caching</li>
+      <li>small on-device model for ultra-low latency</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h3>✋ Hands <span class="tag t-next">next</span></h3>
+    <p class="role">grab onto every stack</p>
+    <ul>
+      <li>more adapters: LangGraph, LlamaIndex, CrewAI, AutoGen</li>
+      <li><b>voice pipeline hooks (STT/TTS)</b> — the biggest India market</li>
+      <li>JS/TS and Go SDKs; gateway plugins (Kong, Envoy, LiteLLM)</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h3>🦵 Legs <span class="tag t-next">next</span></h3>
+    <p class="role">stand &amp; run anywhere</p>
+    <ul>
+      <li>real ASGI service (FastAPI) behind a reverse proxy</li>
+      <li>Kubernetes + Helm, autoscaling, HA, CI/CD</li>
+      <li>multi-tenant isolation, config-as-code</li>
+    </ul>
+  </div>
+
+  <div class="part" style="border-left-color:var(--heart)">
+    <h3>❤️ Heart — the vault <span class="tag t-later">later</span></h3>
+    <p class="role">trustworthy enough for a bank</p>
+    <ul>
+      <li>KMS/HSM-backed vault, RBAC on de-tokenization</li>
+      <li>mTLS, console auth, secrets management</li>
+      <li>threat model + pen-test; SOC2-style controls</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h3>🧬 Nerves <span class="tag t-later">later</span></h3>
+    <p class="role">observable &amp; provable</p>
+    <ul>
+      <li>durable WORM audit store; SIEM/Splunk export</li>
+      <li>metrics + traces + alerting; drift monitoring</li>
+      <li>one-click DPDP evidence &amp; breach packs</li>
+    </ul>
+  </div>
+
+  <div class="part" style="border-left-color:var(--good)">
+    <h3>😊 Face / skin <span class="tag t-next">next</span></h3>
+    <p class="role">visually appealing — what people see</p>
+    <ul>
+      <li>React console (shadcn/Tailwind): policy builder, live stream, charts</li>
+      <li>landing page + 90-second demo video</li>
+      <li>polished docs site</li>
+    </ul>
+  </div>
+
+  <div class="part">
+    <h3>🩺 Immune system <span class="tag t-later">later</span></h3>
+    <p class="role">never falls over</p>
+    <ul>
+      <li>fail-safe modes, circuit breakers, graceful degradation</li>
+      <li>the benchmark as a CI regression gate</li>
+    </ul>
+  </div>
+
+  <div class="part" style="border-left-color:var(--good)">
+    <h3>🗣️ Voice — go-to-market <span class="tag t-next">next</span></h3>
+    <p class="role">how the product gets heard (not a voice bot)</p>
+    <ul>
+      <li>publish: PyPI + npm; open-source the benchmark</li>
+      <li>"Kavach Certified" mark for agents that pass it</li>
+      <li>design partners (NBFC collections / Indian voice-AI)</li>
+    </ul>
+  </div>
+
+</div>
+
+<h2>If you only do 5 things next</h2>
+<div class="prio">
+<ol>
+  <li><b>Push to GitHub + CI + PyPI</b> — instantly "real," backed up, installable. Still #1.</li>
+  <li><b>React console + a 90-sec demo video</b> — the visually appealing face a hiring manager / founder actually sees.</li>
+  <li><b>FastAPI service + Docker/Helm</b> — the "runs in production" credibility (legs).</li>
+  <li><b>Open-source the real labelled benchmark</b> — the brain, the moat, and the hireable artifact at once.</li>
+  <li><b>A JS/TS SDK</b> — so it attaches to the agent stacks most people actually use (hands).</li>
+</ol>
+</div>
+
+<div class="note"><b>On "voice":</b> as a <i>feature</i>, guarding voice agents (STT/TTS) is your richest target market (Indian call-centre / collections AI). As <i>go-to-market</i>, "voice" means publishing and demos so people adopt it. Neither means Kavach becomes a talking assistant.</div>
+
+<footer>Kavach production roadmap · skeleton = what exists today (14 commits, 52 tests) · Nov 2026 · directions and market inputs are indicative. Numbers are on synthetic data.</footer>
+</div>
+</body>
+</html>
