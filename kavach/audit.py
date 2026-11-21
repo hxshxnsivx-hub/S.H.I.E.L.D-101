@@ -87,6 +87,24 @@ class AuditLog:
     def entries(self) -> list[AuditRecord]:
         return list(self._records)
 
+    def export(self) -> list[dict]:
+        """Flat records for a SIEM / warehouse (decisions only, no raw PII)."""
+        return [{"seq": r.seq, "ts": r.ts, "hash": r.hash, **r.evidence} for r in self._records]
+
+    def export_cef(self) -> list[str]:
+        """ArcSight/Common Event Format lines for SIEM ingestion."""
+        sev = {"clean": 1, "sanitized": 3, "needs_review": 6, "blocked_parts": 8}
+        out = []
+        for r in self._records:
+            ev = r.evidence
+            out.append(
+                f"CEF:0|Kavach|agent-firewall|1.0|{ev.get('status')}|agent data egress|"
+                f"{sev.get(ev.get('status'), 3)}|"
+                f"dst={ev.get('destination')} trust={ev.get('trust')} "
+                f"seq={r.seq} entities={len(ev.get('entities', []))} hash={r.hash[:12]}"
+            )
+        return out
+
     def report(self) -> dict:
         """A DPDP-style evidence summary over the whole log."""
         actions: Counter = Counter()

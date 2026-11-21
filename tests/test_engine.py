@@ -50,6 +50,14 @@ class TestEngine(unittest.TestCase):
         tok = self.eng.vault.tokenize("AADHAAR", self.aadhaar)
         self.assertEqual(self.eng.vault.detokenize(tok), self.aadhaar)
 
+    def test_vault_rbac(self):
+        from kavach.vault import TokenVault
+        vlt = TokenVault(require_role="admin")
+        tok = vlt.tokenize("AADHAAR", "123456789012")
+        self.assertEqual(vlt.detokenize(tok, role="admin"), "123456789012")
+        with self.assertRaises(PermissionError):
+            vlt.detokenize(tok, role="agent")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

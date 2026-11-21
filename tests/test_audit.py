@@ -46,6 +46,14 @@ class TestAudit(unittest.TestCase):
         self.assertEqual(rep["events"], 1)
         self.assertGreaterEqual(rep["reportable_events"], 1)  # OTP block -> reportable
 
+    def test_export_and_cef(self):
+        log = AuditLog()
+        log.record(_ev("blocked_parts", "crm"))
+        flat = log.export()
+        self.assertEqual(flat[0]["destination"], "crm")
+        cef = log.export_cef()
+        self.assertTrue(cef[0].startswith("CEF:0|Kavach"))
+
     def test_persistence_roundtrip_no_raw(self):
         base = "23456789012"
         aad = base + v.verhoeff_checksum(base)
