@@ -1,489 +1,320 @@
 <!doctype html>
-<html lang="en" data-type="software" data-radius="sharp">
+<html lang="en" data-type="software">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="page-type" content="software">
-<meta name="site-kind" content="software">
-<title>Kavach — the agent data-firewall</title>
-<meta name="description" content="Kavach stops AI agents from leaking Aadhaar, UPI, cards and health data to third-party tools, and proves it with a tamper-evident DPDP audit. India-native, code-mixed, open source.">
-<meta name="theme-color" content="#010102">
-<meta property="og:title" content="Kavach — the agent data-firewall">
-<meta property="og:description" content="Stop AI agents leaking private data. India-native, DPDP-ready, open source.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="share.jpg">
+<title>Kavach — from a worry to a firewall</title>
+<meta name="description" content="Scroll the story: an AI agent leaking private data, sketched alive on paper, transforms into Kavach — the agent data-firewall.">
+<meta name="theme-color" content="#05070d">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%235e6ad2'/><text x='16' y='23' font-size='20' font-family='sans-serif' font-weight='700' fill='%23010102' text-anchor='middle'>K</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  /* ---- Linear design system (tokens from DESIGN.md) ---- */
   :root{
-    --canvas:#010102; --surface-1:#0f1011; --surface-2:#141516; --surface-3:#18191a;
-    --hairline:#23252a; --hairline-strong:#34343a;
-    --ink:#f7f8f8; --ink-muted:#d0d6e0; --ink-subtle:#8a8f98; --ink-tertiary:#62666d;
-    --accent:#5e6ad2; --accent-hover:#828fff; --on-accent:#ffffff;
-    --success:#27a644; --danger:#e5484d; --warn:#d9a441;
-    --r:8px; --r-sm:6px; --nav:60px;
+    --paper:#fbf8ec; --paper-2:#f0e9d4; --rule:#8ec3e6; --margin:#e58f90; --ink:#1a2b4a;
+    --canvas:#05070d; --surface-1:#0f1011; --hairline:#23252a; --hairline-2:#34343a;
+    --white:#f7f8f8; --sub:#8b97ab; --accent:#5e6ad2; --accent-2:#8f9bff; --success:#27a644;
     --ease:cubic-bezier(.22,.61,.36,1);
-    --wrap:1120px;
   }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  html{scroll-behavior:smooth}
-  body{
-    background:var(--canvas); color:var(--ink);
-    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    font-feature-settings:"cv05","ss01"; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-    overflow-x:hidden; line-height:1.5;
-  }
-  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--canvas);color:var(--white);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:inherit;text-decoration:none}
-  .wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 32px}
-  .skip{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-  .skip:focus{position:fixed;left:12px;top:12px;width:auto;height:auto;clip:auto;margin:0;padding:8px 14px;background:var(--accent);color:var(--on-accent);border-radius:var(--r-sm);z-index:60}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .hand{font-family:"Caveat",cursive} .mono{font-family:"JetBrains Mono",monospace}
 
-  .veil{position:fixed;inset:0;z-index:-1;pointer-events:none;
-    background:radial-gradient(820px 460px at 74% -8%, rgba(94,106,210,.10), transparent 60%),var(--canvas)}
-  .veil::after{content:"";position:absolute;inset:0;
-    background-image:linear-gradient(var(--hairline) 1px,transparent 1px),linear-gradient(90deg,var(--hairline) 1px,transparent 1px);
-    background-size:60px 60px;
-    -webkit-mask-image:radial-gradient(820px 460px at 72% 0,#000,transparent 72%);
-            mask-image:radial-gradient(820px 460px at 72% 0,#000,transparent 72%);opacity:.13}
+  /* fixed layers */
+  #dust{position:fixed;inset:0;z-index:2;pointer-events:none}
+  .rail{position:fixed;top:0;left:0;height:3px;width:100%;z-index:50}
+  .rail i{display:block;height:100%;width:var(--pw,0%);background:linear-gradient(90deg,var(--rule),var(--accent))}
+  .hint{position:fixed;left:50%;bottom:26px;z-index:50;font-family:"Caveat",cursive;font-size:24px;
+    color:var(--ink);opacity:var(--hint,1);transition:opacity .5s;pointer-events:none;display:flex;gap:8px;align-items:center}
+  .hint .arw{animation:bobz 1.6s ease-in-out infinite;display:inline-block}
+  @keyframes bobz{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+  .skip-intro{position:fixed;top:14px;right:16px;z-index:51;font-family:Inter,sans-serif;font-size:13px;font-weight:500;
+    color:var(--ink);opacity:.55;border:1px solid currentColor;border-radius:999px;padding:5px 13px;transition:opacity .2s,color .3s}
+  .skip-intro:hover{opacity:1}
 
-  /* nav */
-  nav{position:sticky;top:0;z-index:40;height:var(--nav);backdrop-filter:blur(14px);
-    background:color-mix(in srgb,var(--canvas) 72%,transparent);border-bottom:1px solid var(--hairline)}
-  nav .wrap{display:flex;align-items:center;gap:11px;height:var(--nav)}
-  .mark{width:28px;height:28px;border-radius:7px;background:var(--accent);
-    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--canvas)}
-  nav b{font-size:16px;font-weight:600;letter-spacing:-.01em}
-  nav .nsp{margin-left:auto}
-  nav .lnk{font-size:14px;color:var(--ink-subtle);font-weight:500;padding:6px 10px}
-  nav .lnk:hover{color:var(--ink)}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;border-radius:var(--r-sm);
-    padding:10px 17px;transition:transform .12s var(--ease),background .15s,border-color .15s,color .15s;cursor:pointer;border:1px solid transparent;white-space:nowrap}
+  /* story scaffold */
+  .story{position:relative;height:520vh}
+  .stage{position:sticky;top:0;height:100vh;overflow:hidden}
+
+  /* ===== PAPER WORLD (full-bleed living page) ===== */
+  .paper{position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(130% 100% at 50% 20%, var(--paper) 0%, var(--paper-2) 78%, #e6dcc0 100%);}
+  .paper .lines{position:absolute;inset:0;
+    background:repeating-linear-gradient(transparent 0 41px, var(--rule) 41px 42px);opacity:var(--rules,.55)}
+  .paper .margin{position:absolute;top:0;bottom:0;left:min(9%,120px);width:2px;background:var(--margin);opacity:calc(var(--rules,.55)*1.1)}
+  .paper .grain{position:absolute;inset:0;opacity:.28;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+  .paper .vig{position:absolute;inset:0;box-shadow:inset 0 0 180px rgba(90,70,40,.28)}
+
+  /* ===== SPACE WORLD ===== */
+  .space{position:absolute;inset:0;z-index:1;opacity:0;
+    background:
+      radial-gradient(60% 50% at 50% 46%, rgba(94,106,210,.22), transparent 62%),
+      radial-gradient(120% 100% at 50% 50%, #0b1026 0%, #05070d 60%, #010102 100%)}
+
+  /* ===== scene (sketch) ===== */
+  .scenewrap{position:absolute;inset:0;z-index:3;display:grid;place-items:center}
+  .scene{width:min(94vw,1000px);height:auto;overflow:visible}
+  #sketch path, #sketch line{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1}
+  .lab{font-family:"JetBrains Mono",monospace;fill:var(--ink);font-size:17px;font-weight:600;opacity:0}
+  .cl{font-family:"Caveat",cursive;fill:var(--ink);font-size:26px;opacity:0}
+
+  /* handwriting */
+  .write{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90vw,780px);
+    text-align:center;z-index:4;opacity:0}
+  .write p{font-family:"Caveat",cursive;color:var(--ink);font-size:clamp(32px,5.4vw,62px);margin:0 auto;
+    line-height:1.15;white-space:nowrap;overflow:hidden;width:0}
+
+  /* glowing product shield */
+  .glow{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(.6);opacity:0;z-index:6;width:clamp(150px,21vw,240px)}
+  .glow svg{width:100%;height:auto;filter:drop-shadow(0 0 46px rgba(94,106,210,.65));animation:breathe 3.6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{filter:drop-shadow(0 0 40px rgba(94,106,210,.5))}50%{filter:drop-shadow(0 0 60px rgba(94,106,210,.8))}}
+
+  /* streaming locked data */
+  .nodes{position:absolute;inset:0;z-index:5;opacity:0}
+  .node{position:absolute;display:flex;align-items:center;gap:7px;transform:translate(-50%,-50%);
+    font-family:"JetBrains Mono",monospace;font-size:12px;color:#c6ccff}
+  .node .lk{width:28px;height:28px;border-radius:50%;border:1px solid rgba(94,106,210,.6);
+    display:grid;place-items:center;background:rgba(94,106,210,.14);color:var(--accent-2);box-shadow:0 0 18px rgba(94,106,210,.25)}
+  .node .tg{border:1px solid rgba(94,106,210,.35);border-radius:6px;padding:3px 9px;background:rgba(10,12,22,.7)}
+
+  /* app chrome */
+  .chrome{position:absolute;inset:0;z-index:7;opacity:0;pointer-events:none}
+  .chrome .bar{position:absolute;top:0;left:0;right:0;height:46px;border-bottom:1px solid var(--hairline);
+    display:flex;align-items:center;gap:10px;padding:0 16px;background:rgba(8,10,18,.55);backdrop-filter:blur(8px)}
+  .chrome .dots{display:flex;gap:7px}.chrome .dots i{width:11px;height:11px;border-radius:50%}
+  .chrome .hex{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--sub)}
+  .chrome .side{position:absolute;top:46px;left:0;bottom:0;width:52px;border-right:1px solid var(--hairline);
+    display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:20px;background:rgba(8,10,18,.35)}
+  .chrome .side i{width:18px;height:18px;border-radius:5px;background:var(--hairline-2);opacity:.7}
+
+  /* finale */
+  .finale{position:absolute;left:0;right:0;bottom:7vh;z-index:8;text-align:center;opacity:0;transform:translateY(22px);padding:0 20px}
+  .finale::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:130%;height:240%;z-index:-1;pointer-events:none;background:radial-gradient(58% 56% at 50% 62%, rgba(5,7,13,.92), transparent 74%)}
+  .finale h1,.finale p{text-shadow:0 2px 28px rgba(5,7,13,.95)}
+  .finale h1{font-size:clamp(27px,4.1vw,48px);font-weight:600;letter-spacing:-.03em;margin:0 auto 12px;max-width:20ch}
+  .finale h1 em{font-style:normal;color:var(--accent-2)}
+  .finale p{color:var(--sub);margin:0 auto 20px;max-width:52ch;font-size:clamp(14px,1.6vw,17px)}
+  .finale .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;border-radius:8px;padding:12px 22px;border:1px solid transparent;transition:transform .12s,background .15s,border-color .15s}
   .btn:active{transform:translateY(1px)}
-  .btn-primary{background:var(--accent);color:var(--on-accent)}
-  .btn-primary:hover{background:var(--accent-hover)}
-  .btn-ghost{border-color:var(--hairline-strong);color:var(--ink);background:transparent}
-  .btn-ghost:hover{border-color:var(--ink-subtle);background:var(--surface-1)}
-  nav .btn{padding:7px 14px}
+  .btn.p{background:var(--accent);color:#fff}.btn.p:hover{background:var(--accent-2)}
+  .btn.g{border-color:var(--hairline-2);color:var(--white)}.btn.g:hover{border-color:var(--sub);background:var(--surface-1)}
 
-  /* screens — one section per viewport */
-  main{display:block}
-  .screen{min-height:100vh;display:flex;align-items:center;padding:96px 0;border-top:1px solid var(--hairline)}
-  .screen:first-child{border-top:0}
-  .hero{min-height:calc(100vh - var(--nav));padding-top:34px;padding-bottom:40px}
-  .eyebrow{color:var(--ink-subtle);font-weight:600;font-size:12.5px;letter-spacing:.02em;margin-bottom:12px}
-  h2{font-size:clamp(28px,3.8vw,42px);letter-spacing:-.03em;font-weight:600;margin:0 0 14px;max-width:20ch;line-height:1.05}
-  .sub{color:var(--ink-subtle);margin:0;max-width:56ch;font-size:16.5px;line-height:1.55}
-
-  /* hero */
-  .enter{opacity:0;transform:translateY(14px);animation:enter .7s var(--ease) forwards}
-  .enter.d1{animation-delay:.06s}.enter.d2{animation-delay:.12s}.enter.d3{animation-delay:.18s}.enter.d4{animation-delay:.26s}
-  @keyframes enter{to{opacity:1;transform:none}}
-  .herogrid{display:block;width:100%}
-  .tag{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-muted);
-    border:1px solid var(--hairline);background:var(--surface-1);border-radius:999px;padding:5px 13px}
-  .tag .d{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(94,106,210,.55);animation:pulse 2s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,106,210,.5)}70%{box-shadow:0 0 0 8px rgba(94,106,210,0)}100%{box-shadow:0 0 0 0 rgba(94,106,210,0)}}
-  h1{font-size:clamp(38px,5.4vw,58px);line-height:1.02;letter-spacing:-.038em;font-weight:600;margin:16px 0 14px;max-width:18ch}
-  h1 em{font-style:normal;color:var(--accent)}
-  .lead{font-size:clamp(16px,2.1vw,20px);color:var(--ink-subtle);max-width:62ch;line-height:1.55;font-weight:400}
-  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;align-items:center}
-  .row .btn{padding:12px 20px;font-size:15px}
-  .facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:20px}
-  .facts .f{display:flex;flex-direction:column;gap:2px}
-  .facts .v{font-size:19px;font-weight:600;letter-spacing:-.01em;font-family:"JetBrains Mono",monospace}
-  .facts .k{font-size:12.5px;color:var(--ink-tertiary)}
-  .facts .accent{color:var(--accent)}
-
-  /* ---- LIVE scene ---- */
-  .scene{margin-top:22px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r);overflow:hidden}
-  .scene .bar{display:flex;align-items:center;gap:12px;padding:11px 15px;border-bottom:1px solid var(--hairline);font-size:12.5px;color:var(--ink-subtle)}
-  .scene .bar .live{color:var(--ink);font-weight:600;display:inline-flex;align-items:center;gap:7px}
-  .scene .bar .live i{width:6px;height:6px;border-radius:50%;background:var(--danger);animation:pulse2 1.6s infinite}
-  @keyframes pulse2{0%,100%{opacity:1}50%{opacity:.35}}
-  .scene .bar .nsp{margin-left:auto}
-  .pausebtn{font:inherit;font-size:12px;color:var(--ink-subtle);background:var(--surface-2);border:1px solid var(--hairline-strong);
-    border-radius:var(--r-sm);padding:5px 11px;cursor:pointer;transition:border-color .15s,color .15s}
-  .pausebtn:hover{color:var(--ink);border-color:var(--ink-subtle)}
-  .stage{position:relative;height:158px;background:radial-gradient(460px 150px at 50% 128%, rgba(94,106,210,.09), transparent 62%)}
-  .endpoint{position:absolute;top:50%;transform:translateY(-50%);width:132px;text-align:center;z-index:3}
-  .endpoint.left{left:16px}.endpoint.right{right:16px}
-  .node{border:1px solid var(--hairline);background:var(--surface-2);border-radius:var(--r);padding:12px 10px}
-  .node .ic{font-size:20px;line-height:1}.node .t{font-size:12.5px;margin-top:6px;font-weight:600;color:var(--ink)}
-  .node .s{font-size:10.5px;color:var(--ink-tertiary);margin-top:2px}
-  .lane{position:absolute;inset:0 150px;z-index:2}
-  .chip{position:absolute;transform:translateX(-50%);white-space:nowrap;font-family:"JetBrains Mono",monospace;
-    font-size:11.5px;padding:5px 9px;border-radius:var(--r-sm);border:1px solid;will-change:left}
-  .chip.raw{color:#ffc9c6;border-color:color-mix(in srgb,var(--danger) 52%,transparent);background:color-mix(in srgb,var(--danger) 14%,transparent)}
-  .chip.tok{color:#c6ccff;border-color:color-mix(in srgb,var(--accent) 60%,transparent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
-  .chip.msk{color:#f2dca6;border-color:color-mix(in srgb,var(--warn) 54%,transparent);background:color-mix(in srgb,var(--warn) 14%,transparent)}
-  .chip.blk{color:#fff;border-color:var(--danger);background:color-mix(in srgb,var(--danger) 34%,transparent)}
-  .chip.ok{color:#aee6bd;border-color:color-mix(in srgb,var(--success) 52%,transparent);background:color-mix(in srgb,var(--success) 14%,transparent)}
-  .chip.pop{animation:pop .34s var(--ease)}
-  @keyframes pop{0%{transform:translateX(-50%) scale(.72)}60%{transform:translateX(-50%) scale(1.1)}100%{transform:translateX(-50%) scale(1)}}
-  .gate{position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);z-index:1;
-    background:linear-gradient(transparent,var(--accent) 18%,var(--accent) 82%,transparent)}
-  .scan{position:absolute;left:50%;top:0;bottom:0;width:120px;transform:translateX(-50%);z-index:1;
-    background:radial-gradient(closest-side,rgba(94,106,210,.16),transparent);animation:breathe 2.6s ease-in-out infinite}
-  @keyframes breathe{0%,100%{opacity:.45}50%{opacity:.9}}
-  .badge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;width:46px;height:46px;border-radius:12px;
-    background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:21px;
-    box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 60%,transparent),0 8px 30px rgba(94,106,210,.4);animation:bob 3.4s ease-in-out infinite}
-  @keyframes bob{0%,100%{transform:translate(-50%,-53%)}50%{transform:translate(-50%,-47%)}}
-  .legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:11.5px;color:var(--ink-subtle);
-    padding:11px 15px;border-top:1px solid var(--hairline)}
-  .legend s{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-  .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
-  .i-tok{background:var(--accent)}.i-msk{background:var(--warn)}.i-blk{background:var(--danger)}.i-ok{background:var(--success)}
-
-  /* two-column section — one consistent column system across sections */
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;width:100%}
-  .split>*{min-width:0}
-  .lede h2{margin-top:10px}
-
-  /* steps */
-  .steps{display:flex;flex-direction:column;gap:12px;margin-top:26px}
-  .step{display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r);
-    transition:border-color .15s,background .15s}
-  .step:hover{border-color:var(--hairline-strong);background:var(--surface-2)}
-  .step .n{font-family:"JetBrains Mono",monospace;color:var(--accent);font-size:13px;font-weight:700;min-width:22px}
-  .step h3{margin:0 0 3px;font-size:15px;font-weight:600}
-  .step p{margin:0;font-size:13.5px;color:var(--ink-subtle);line-height:1.5}
-
-  /* ---- Kavach console (app-frame: the product UI as live HTML) ---- */
-  .appframe{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.45)}
-  .af-bar{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--hairline);font-size:12px;color:var(--ink-subtle)}
-  .af-bar .dots{display:flex;gap:6px}.af-bar .dots i{width:10px;height:10px;border-radius:50%;background:var(--hairline-strong);display:block}
-  .af-bar .ttl{font-weight:600;color:var(--ink)}
-  .af-bar .dest{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--danger);
-    border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);border-radius:999px;padding:2px 9px}
-  .af-head,.af-row{display:grid;grid-template-columns:1.1fr 1.15fr 0.95fr 1.25fr;gap:10px;align-items:center;padding:9px 14px}
-  .af-head{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-tertiary);border-bottom:1px solid var(--hairline)}
-  .af-row{border-top:1px solid color-mix(in srgb,var(--hairline) 60%,transparent);font-family:"JetBrains Mono",monospace;font-size:11.5px}
-  .af-row .fld{color:var(--ink-muted)}
-  .af-row .cls{color:var(--ink-subtle)}
-  .af-row .cls b{color:var(--ink);font-weight:600}
-  .act{font-weight:700;font-size:10.5px;letter-spacing:.02em;padding:2px 8px;border-radius:4px;width:max-content}
-  .act.tok{color:#c6ccff;background:color-mix(in srgb,var(--accent) 20%,transparent)}
-  .act.blk{color:#fff;background:color-mix(in srgb,var(--danger) 42%,transparent)}
-  .act.msk{color:#f2dca6;background:color-mix(in srgb,var(--warn) 20%,transparent)}
-  .act.ok{color:#aee6bd;background:color-mix(in srgb,var(--success) 20%,transparent)}
-  .af-row .res{color:var(--ink);overflow:hidden;text-overflow:ellipsis}
-  .af-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 14px;border-top:1px solid var(--hairline);
-    font-size:11.5px;color:var(--ink-subtle);font-family:"JetBrains Mono",monospace}
-  .af-foot .ok{color:var(--success)}.af-foot .sp{margin-left:auto}
-
-  /* ---- architecture diagram ---- */
-  .diagram{width:100%;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r);padding:22px}
-  .diagram svg{width:100%;height:auto;display:block}
-  .d-flow{stroke-width:1.5;fill:none}
-  .d-raw{stroke:var(--danger)}.d-safe{stroke:var(--accent)}
-  .d-pulse{stroke-width:3;fill:none;stroke-linecap:round;stroke-dasharray:4 190;animation:dash 2.6s linear infinite}
-  @keyframes dash{to{stroke-dashoffset:-194}}
-  .d-box{fill:var(--surface-2);stroke:var(--hairline-strong)}
-  .d-hub{fill:var(--accent)}
-  .d-t{fill:var(--ink);font:600 13px Inter,sans-serif}
-  .d-s{fill:var(--ink-tertiary);font:11px "JetBrains Mono",monospace}
-  .d-lbl{fill:var(--ink-subtle);font:10px "JetBrains Mono",monospace}
-
-  .codecard{background:#070809;border:1px solid var(--hairline);border-radius:var(--r);overflow:hidden}
-  .codecard .cc-bar{padding:10px 14px;border-bottom:1px solid var(--hairline);font-size:11.5px;color:var(--ink-tertiary);font-family:"JetBrains Mono",monospace}
-  pre{margin:0;padding:18px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.75;color:var(--ink-muted)}
-  .kw{color:var(--accent-hover)}.fn{color:#8fe3b0}.st{color:var(--warn)}.cm{color:var(--ink-tertiary)}
-
-  /* why cards */
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px;width:100%}
-  .card{min-width:0;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r);padding:22px;
-    transition:transform .14s var(--ease),border-color .15s,background .15s}
-  .card:hover{transform:translateY(-2px);border-color:var(--hairline-strong);background:var(--surface-2)}
-  .card .ic{width:38px;height:38px;border-radius:9px;background:var(--surface-2);border:1px solid var(--hairline-strong);
-    display:flex;align-items:center;justify-content:center;font-size:19px}
-  .card h3{margin:16px 0 8px;font-size:17px;font-weight:600}
-  .card p{margin:0 0 14px;color:var(--ink-subtle);font-size:14px;line-height:1.55}
-  .card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
-  .card li{font-size:12.5px;color:var(--ink-muted);font-family:"JetBrains Mono",monospace;display:flex;gap:8px;align-items:center}
-  .card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none}
-
-  /* close */
-  .close{text-align:center;width:100%;max-width:720px;margin:0 auto}
-  .close .badge-lg{width:60px;height:60px;border-radius:15px;background:var(--accent);margin:0 auto 24px;
-    display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 44px rgba(94,106,210,.4)}
-  .close h2{margin:0 auto 14px;max-width:22ch;font-size:clamp(30px,4.4vw,46px)}
-  .close .sub{margin:0 auto 26px}
-  .close .row{justify-content:center}
-  .closegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px;text-align:left}
-  .closegrid .cg{min-width:0;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:6px}
-  .closegrid .cg-k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.02em}
-  .closegrid .cg-v{font-size:12.5px;color:var(--ink-subtle);font-family:"JetBrains Mono",monospace;line-height:1.5}
-
-  footer{border-top:1px solid var(--hairline);padding:40px 0}
-  footer .wrap{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
-  footer .fnav{display:flex;gap:20px;flex-wrap:wrap;font-size:13.5px;color:var(--ink-subtle)}
-  footer .fnav a:hover{color:var(--ink)}
-  footer .fine{font-size:12.5px;color:var(--ink-tertiary);max-width:70ch}
-
-  @media(max-width:900px){
-    .split{grid-template-columns:1fr;gap:28px}
-    .grid3,.closegrid{grid-template-columns:1fr}
-    .endpoint{width:104px}.lane{inset:0 130px}
-    .screen{min-height:auto;padding:72px 0}
-    .hero{min-height:auto}
-  }
-  @media(max-width:640px){ nav .lnk{display:none} }
-  @media(max-width:520px){
-    .wrap{padding:0 20px}.row .btn{width:100%;justify-content:center}
-    .stage{height:224px}.facts{gap:20px}
-    .endpoint{width:82px}.endpoint.left{left:10px}.endpoint.right{right:10px}.lane{inset:0 104px}
-    .node{padding:10px 6px}.node .t{font-size:11.5px}
-    .chip{font-size:11px;padding:4px 7px}
-    .af-head{display:none}.af-row{grid-template-columns:1fr 1fr;gap:6px 10px}
-    .af-row .res{grid-column:1/-1}
+  @media(max-width:640px){
+    .story{height:480vh}
+    .write p{white-space:normal}
+    .scene{width:min(136vw,560px)}
+    .lab{font-size:21px} .cl{font-size:30px} .qmark{display:none}
+    .node{font-size:10px} .node.low{display:none}
   }
   @media(prefers-reduced-motion:reduce){
-    *{animation:none!important;scroll-behavior:auto!important}
-    .enter{opacity:1;transform:none}
+    .glow svg{animation:none} .hint .arw{animation:none}
   }
 </style>
 </head>
 <body>
-<div class="veil"></div>
-<a class="skip" href="#main">Skip to content</a>
 
-<nav><div class="wrap">
-  <span class="mark">K</span><b>Kavach</b>
-  <span class="nsp"></span>
-  <a class="lnk" href="#how">How it works</a>
-  <a class="lnk" href="#arch">Architecture</a>
-  <a class="lnk" href="#why">Why Kavach</a>
-  <a class="btn btn-primary" href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">GitHub</a>
-</div></nav>
+<canvas id="dust"></canvas>
+<div class="rail"><i></i></div>
+<a class="skip-intro" href="app.html">Skip intro →</a>
+<div class="hint">scroll <span class="arw">↓</span></div>
 
-<main id="main">
+<section class="story">
+  <div class="stage">
+    <!-- worlds -->
+    <div class="paper" id="paper"><div class="lines"></div><div class="margin"></div><div class="grain"></div><div class="vig"></div></div>
+    <div class="space" id="space"></div>
 
-<!-- ====== HERO ====== -->
-<header class="screen hero"><div class="wrap herogrid">
-  <span class="tag enter"><span class="d"></span> Watching agent traffic, live</span>
-  <h1 class="enter d1">Your AI agents are leaking <em>private data.</em> Kavach stops it.</h1>
-  <p class="lead enter d2">A data-firewall that sits on every tool call and catches Aadhaar, UPI, cards and health data — in code-mixed Hindi, Tamil and English — before it leaves for a third-party tool. Every decision becomes tamper-evident DPDP evidence.</p>
-  <div class="row enter d3">
-    <a class="btn btn-primary" href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">Get it on GitHub</a>
-    <a class="btn btn-ghost" href="#how">See how it works</a>
-  </div>
-  <div class="facts enter d3">
-    <div class="f"><span class="v accent">0.997</span><span class="k">recall on synthetic code-mixed PII</span></div>
-    <div class="f"><span class="v">5</span><span class="k">Indic languages, code-mixed</span></div>
-    <div class="f"><span class="v">&lt;1ms</span><span class="k">on the hot path</span></div>
-  </div>
+    <!-- SVG filters -->
+    <svg width="0" height="0" style="position:absolute"><defs>
+      <filter id="boil"><feTurbulence id="boilN" type="fractalNoise" baseFrequency="0.013" numOctaves="2" seed="2" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4"/></filter>
+      <linearGradient id="shg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7dbff"/><stop offset="1" stop-color="#5e6ad2"/></linearGradient>
+    </defs></svg>
 
-  <!-- the one effect: a live product demo of the firewall at work -->
-  <div class="scene enter d4" aria-label="Live demonstration of Kavach masking outbound agent data">
-    <div class="bar">
-      <span class="live"><i></i> LIVE</span>
-      <span>outbound agent traffic → external tool</span>
-      <span class="nsp"></span>
-      <button class="pausebtn" id="pause" aria-pressed="false">Pause</button>
+    <!-- sketch scene -->
+    <div class="scenewrap" id="scenewrap">
+      <svg class="scene" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet">
+        <g id="sketch" filter="url(#boil)">
+          <!-- establishing figure: already drawn on landing (negative windows) -->
+          <path class="draw" data-s="-0.06" data-e="0.00" d="M120 430 H760"/>
+          <path class="draw" data-s="-0.05" data-e="0.00" d="M250 250 a30 30 0 1 1 0.1 0"/>
+          <path class="draw" data-s="-0.04" data-e="0.01" d="M250 280 q-10 70 0 120 M250 318 q54 8 96 92"/>
+          <path class="draw" data-s="-0.02" data-e="0.03" d="M252 400 q34 8 60 10 M312 412 l-2 72"/>
+          <path class="draw" data-s="-0.05" data-e="0.00" d="M196 300 q-14 90 -4 184 M176 484 h74"/>
+          <!-- laptop draws as you begin scrolling -->
+          <path class="draw" data-s="0.02" data-e="0.10" d="M330 420 h150 l24 -74 h-150 Z"/>
+          <path class="draw" data-s="0.05" data-e="0.11" d="M354 346 h150 l-6 74 h-150"/>
+          <line class="draw" data-s="0.08" data-e="0.12" x1="372" y1="360" x2="470" y2="360"/>
+          <line class="draw" data-s="0.09" data-e="0.13" x1="368" y1="378" x2="486" y2="378"/>
+          <!-- leak: data flying out, up-right -->
+          <path class="draw" data-s="0.12" data-e="0.22" d="M506 352 q80 -40 150 -20 M520 372 q90 -8 150 28 M500 392 q70 30 150 44"/>
+          <g>
+            <path class="draw" data-s="0.14" data-e="0.22" d="M660 300 l44 -16 l44 16 l-44 16 Z M660 300 v30 l44 16 v-30 M748 300 v30 l-44 16"/>
+            <path class="draw" data-s="0.16" data-e="0.24" d="M680 388 l44 -16 l44 16 l-44 16 Z M680 388 v30 l44 16 v-30 M768 388 v30 l-44 16"/>
+            <path class="draw" data-s="0.18" data-e="0.26" d="M650 452 l40 -14 l40 14 l-40 14 Z M650 452 v28 l40 14 v-28 M730 452 v28 l-40 14"/>
+          </g>
+          <!-- worry clouds -->
+          <path class="draw" data-s="0.26" data-e="0.36" d="M120 120 q-34 -44 22 -58 q10 -44 66 -28 q34 -38 80 -8 q50 -16 60 30 q44 12 16 54 q10 44 -46 40 q-22 34 -74 16 q-44 24 -82 -12 q-56 6 -46 -44 Z"/>
+          <path class="draw" data-s="0.30" data-e="0.40" d="M470 92 q-28 -36 18 -48 q8 -36 54 -22 q28 -32 66 -8 q42 -12 50 26 q36 10 12 44 q8 36 -38 34 q-18 28 -60 12 q-36 20 -68 -10 q-46 4 -36 -36 Z"/>
+          <!-- sketched shield (write phase) -->
+          <path id="skshield" class="draw" data-s="0.40" data-e="0.52" d="M500 300 l54 22 v46 c0 36 -24 60 -54 70 c-30 -10 -54 -34 -54 -70 v-46 Z"/>
+        </g>
+        <!-- text kept OUT of the boil filter so words stay crisp -->
+        <g id="labels">
+          <text class="lab" x="672" y="306" data-s="0.18" data-e="0.24">Aadhaar</text>
+          <text class="lab" x="700" y="394" data-s="0.20" data-e="0.26">card</text>
+          <text class="lab" x="664" y="458" data-s="0.22" data-e="0.28">OTP</text>
+          <text class="cl" x="140" y="90"  data-s="0.28" data-e="0.36">What if it leaks?</text>
+          <text class="cl" x="498" y="66"  data-s="0.32" data-e="0.40">Who sees my data?</text>
+          <text class="lab qmark" x="300" y="130" font-size="40" data-s="0.28" data-e="0.35">?</text>
+        </g>
+      </svg>
     </div>
-    <div class="stage">
-      <div class="endpoint left"><div class="node"><div class="ic">🤖</div><div class="t">AI Agent</div><div class="s">Hi · Ta · En</div></div></div>
-      <div class="scan"></div><div class="gate"></div>
-      <div class="badge" title="Kavach">🛡️</div>
-      <div class="endpoint right"><div class="node"><div class="ic">🌐</div><div class="t">External tool</div><div class="s">CRM · API · SMS</div></div></div>
-      <div class="lane" id="lane"></div>
-    </div>
-    <div class="legend">
-      <s><i class="i-tok"></i> tokenized</s>
-      <s><i class="i-msk"></i> masked</s>
-      <s><i class="i-blk"></i> blocked (secrets)</s>
-      <s><i class="i-ok"></i> allowed</s>
-    </div>
-  </div>
-</div></header>
 
-<!-- ====== HOW IT WORKS ====== -->
-<section class="screen" id="how"><div class="wrap split">
-  <div class="lede">
-    <div class="eyebrow">How it works</div>
-    <h2>Sits on the tool call. Decides. Proves.</h2>
-    <p class="sub">An agent's real risk is the arguments it passes to a tool. Kavach intercepts every argument before dispatch, classifies it, and acts — while the model, the prompt and the graph stay exactly as they were.</p>
-    <div class="steps">
-      <div class="step"><span class="n">01</span><div><h3>Attach</h3><p>One wrapper — SDK, LangChain, MCP, OpenAI, or voice STT/TTS.</p></div></div>
-      <div class="step"><span class="n">02</span><div><h3>Detect</h3><p>Verhoeff and Luhn checksums for Aadhaar and card, plus Indic NER — even spoken number-words.</p></div></div>
-      <div class="step"><span class="n">03</span><div><h3>Decide</h3><p>Allow, mask, tokenize, block or escalate, by destination trust and sensitivity.</p></div></div>
-      <div class="step"><span class="n">04</span><div><h3>Prove</h3><p>A hash-chained audit log and a one-click DPDP evidence report.</p></div></div>
+    <!-- handwriting -->
+    <div class="write" id="write"><p id="w1">What if something guarded</p><p id="w2">every tool call?</p></div>
+
+    <!-- glowing shield -->
+    <div class="glow" id="glow"><svg viewBox="0 0 120 140">
+      <path d="M60 6 L112 28 V70 C112 104 88 126 60 134 C32 126 8 104 8 70 V28 Z" fill="url(#shg)"/>
+      <path d="M60 6 L112 28 V70 C112 104 88 126 60 134 C32 126 8 104 8 70 V28 Z" fill="none" stroke="#e7eaff" stroke-width="1.4" opacity=".6"/>
+      <path d="M60 12 V128" stroke="#05070d" stroke-width="2" opacity=".16"/></svg></div>
+
+    <!-- streaming locked data -->
+    <div class="nodes" id="nodes"></div>
+
+    <!-- app chrome -->
+    <div class="chrome" id="chrome">
+      <div class="bar"><span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>
+        <span class="hex" style="margin-left:6px">#010102</span><span class="hex" style="margin-left:auto">#5E6AD2</span></div>
+      <div class="side"><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-  </div>
-  <!-- live product UI: the Kavach decision console -->
-  <div class="appframe" role="img" aria-label="Kavach console: a tool call to an untrusted CRM, each field classified and acted on, with a verified audit chain">
-    <div class="af-bar"><span class="dots"><i></i><i></i><i></i></span><span class="ttl">kavach · console</span><span class="dest">crm_api · UNTRUSTED</span></div>
-    <div class="af-head"><span>field</span><span>detected</span><span>action</span><span>egress value</span></div>
-    <div class="af-row"><span class="fld">.aadhaar</span><span class="cls"><b>AADHAAR</b> · S3</span><span class="act tok">TOKENIZE</span><span class="res">‹AADHAAR:tok0002›</span></div>
-    <div class="af-row"><span class="fld">.card</span><span class="cls"><b>CARD_PAN</b> · S3</span><span class="act tok">TOKENIZE</span><span class="res">‹CARD:tok0001›</span></div>
-    <div class="af-row"><span class="fld">.otp</span><span class="cls"><b>OTP</b> · S1</span><span class="act blk">BLOCK</span><span class="res">[BLOCKED]</span></div>
-    <div class="af-row"><span class="fld">.vpa</span><span class="cls"><b>UPI_VPA</b> · S2</span><span class="act msk">MASK</span><span class="res">ravi@•••</span></div>
-    <div class="af-row"><span class="fld">.name</span><span class="cls"><b>NAME</b> · S2</span><span class="act ok">ALLOW</span><span class="res">Priya</span></div>
-    <div class="af-foot"><span>audit: 5 events</span><span>reportable</span><span class="sp"></span><span class="ok">chain ✓</span></div>
-  </div>
-</div></section>
 
-<!-- ====== ARCHITECTURE ====== -->
-<section class="screen" id="arch"><div class="wrap split">
-  <div class="lede">
-    <div class="eyebrow">Architecture</div>
-    <h2>Detect, decide, act — then prove it</h2>
-    <p class="sub">Deterministic checks run first — Verhoeff, Luhn, PAN, IFSC, GSTIN and a UPI allowlist — then a multilingual NER model catches the names and health terms the rules miss. Each finding is scored by sensitivity, matched against the destination's trust, and acted on. Secrets never egress, whatever the destination.</p>
-    <div class="codecard" style="margin-top:22px">
-      <div class="cc-bar">guard your agent — one line</div>
-<pre><span class="kw">from</span> kavach <span class="kw">import</span> Kavach, Trust
-<span class="kw">from</span> kavach.integrations.langchain <span class="kw">import</span> guard_tools
-
-kav = <span class="fn">Kavach</span>(trust={<span class="st">"crm_api"</span>: Trust.UNTRUSTED})
-agent = <span class="fn">create_react_agent</span>(llm, <span class="fn">guard_tools</span>(kav, tools))  <span class="cm"># guarded</span></pre>
+    <!-- finale -->
+    <div class="finale" id="finale">
+      <h1>Your AI agents are leaking <em>private data.</em> Kavach stops it.</h1>
+      <p>The worry on the page is real. Kavach is the firewall that catches Aadhaar, UPI, cards and health data before an agent leaks it — and proves it with a DPDP audit.</p>
+      <div class="btns"><a class="btn p" href="app.html">Enter the site →</a>
+        <a class="btn g" href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">GitHub</a></div>
     </div>
   </div>
-  <div class="diagram" aria-label="Diagram: raw data from the agent enters Kavach, which tokenizes, masks or blocks it before it reaches core banking, a CRM and SMS">
-    <svg viewBox="0 0 560 300" role="img">
-      <!-- agent -->
-      <rect class="d-box" x="10" y="120" width="120" height="60" rx="8"/>
-      <text class="d-t" x="70" y="146" text-anchor="middle">AI Agent</text>
-      <text class="d-s" x="70" y="164" text-anchor="middle">tool call</text>
-      <!-- flows agent -> hub -->
-      <path class="d-flow d-raw" d="M130 150 H250"/>
-      <path class="d-pulse d-raw" d="M130 150 H250"/>
-      <text class="d-lbl" x="190" y="142" text-anchor="middle">raw PII</text>
-      <!-- hub -->
-      <rect class="d-hub" x="250" y="124" width="60" height="52" rx="12"/>
-      <text class="d-t" x="280" y="154" text-anchor="middle" fill="#010102">🛡</text>
-      <text class="d-s" x="280" y="196" text-anchor="middle">Kavach</text>
-      <!-- flows hub -> tools -->
-      <path class="d-flow d-safe" d="M310 150 C360 150 360 60 440 60"/>
-      <path class="d-pulse d-safe" d="M310 150 C360 150 360 60 440 60"/>
-      <path class="d-flow d-safe" d="M310 150 H440"/>
-      <path class="d-pulse d-safe" d="M310 150 H440"/>
-      <path class="d-flow d-safe" d="M310 150 C360 150 360 240 440 240"/>
-      <path class="d-pulse d-safe" d="M310 150 C360 150 360 240 440 240"/>
-      <!-- tools -->
-      <rect class="d-box" x="440" y="36" width="110" height="48" rx="8"/>
-      <text class="d-t" x="495" y="58" text-anchor="middle">Core banking</text>
-      <text class="d-s" x="495" y="74" text-anchor="middle">trusted · full</text>
-      <rect class="d-box" x="440" y="126" width="110" height="48" rx="8"/>
-      <text class="d-t" x="495" y="148" text-anchor="middle">CRM API</text>
-      <text class="d-s" x="495" y="164" text-anchor="middle">tokenized</text>
-      <rect class="d-box" x="440" y="216" width="110" height="48" rx="8"/>
-      <text class="d-t" x="495" y="238" text-anchor="middle">SMS gateway</text>
-      <text class="d-s" x="495" y="254" text-anchor="middle">masked</text>
-    </svg>
-  </div>
-</div></section>
-
-<!-- ====== WHY ====== -->
-<section class="screen" id="why"><div class="wrap">
-  <div class="eyebrow">Why Kavach</div>
-  <h2>Built for India's data, and its rules</h2>
-  <p class="sub">Western DLP tools were trained on Western identifiers. Kavach is built from the other direction — Indian PII, Indian languages and the DPDP Act.</p>
-  <div class="grid3">
-    <div class="card"><div class="ic">🇮🇳</div><h3>India-native</h3><p>The identifiers and scripts that generic tools miss, caught by checksum and model together.</p>
-      <ul><li>Aadhaar · PAN · GSTIN</li><li>UPI VPA · IFSC · ABHA</li><li>Hindi · Tamil · Telugu · Bengali</li></ul></div>
-    <div class="card"><div class="ic">📜</div><h3>Compliance-ready</h3><p>The exact DPDP Rule-6 safeguards, generated as evidence you can hand to an auditor.</p>
-      <ul><li>Masking · tokenization</li><li>Access control on detokenize</li><li>Tamper-evident audit + CEF export</li></ul></div>
-    <div class="card"><div class="ic">⚡</div><h3>Deploy anywhere</h3><p>A stdlib core with no network calls — safe to run fully air-gapped, fast on the hot path.</p>
-      <ul><li>SaaS · VPC · on-prem</li><li>Docker + Helm</li><li>FastAPI service + Prometheus</li></ul></div>
-  </div>
-</div></section>
-
-<!-- ====== CLOSE ====== -->
-<section class="screen"><div class="wrap"><div class="close">
-  <div class="badge-lg">🛡️</div>
-  <h2>Ship agents that can touch private data — safely</h2>
-  <p class="sub">Open source, Apache-2.0, tested and ready. Attach it to the agent you already run and give your DPDP officer the evidence trail on day one.</p>
-  <div class="row">
-    <a class="btn btn-primary" href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">Get it on GitHub</a>
-    <a class="btn btn-ghost" href="#how">See how it works</a>
-  </div>
-  <div class="closegrid">
-    <div class="cg"><span class="cg-k">Attach</span><span class="cg-v">SDK · LangChain · MCP · OpenAI · voice</span></div>
-    <div class="cg"><span class="cg-k">Run</span><span class="cg-v">SaaS · VPC · on-prem · air-gapped</span></div>
-    <div class="cg"><span class="cg-k">Prove</span><span class="cg-v">DPDP Rule-6 report · CEF export</span></div>
-  </div>
-</div></div></section>
-
-</main>
-
-<footer><div class="wrap">
-  <div class="fnav">
-    <a href="#how">How it works</a>
-    <a href="#arch">Architecture</a>
-    <a href="#why">Why Kavach</a>
-    <a href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">GitHub</a>
-  </div>
-  <p class="fine">Kavach — the agent data-firewall. Detection metrics shown are measured on synthetic, code-mixed data; real-world quality depends on pilot data. Apache-2.0.</p>
-</div></footer>
+</section>
 
 <script>
-// ---- live firewall demo ----
-const lane = document.getElementById("lane");
-const ITEMS = [
-  { t: "Aadhaar 2345 6789 0124", out: "‹AADHAAR:tok›", cls: "tok" },
-  { t: "card 4111 1111 1111 1111", out: "‹CARD:tok›", cls: "tok" },
-  { t: "OTP 123456", out: "[BLOCKED]", cls: "blk" },
-  { t: "UPI ravi@okhdfcbank", out: "ravi@•••", cls: "msk" },
-  { t: "diagnosis diabetes", out: "[BLOCKED]", cls: "blk" },
-  { t: "phone 98765 43210", out: "XXXXX 43210", cls: "msk" },
-  { t: "Priya · Chennai", out: "Priya · Chennai", cls: "ok", allow: true },
-];
-const vw = window.innerWidth;
-const ROWS = 3, PER_ROW = vw < 700 ? 1 : vw < 980 ? 2 : 3;
-const N = ROWS * PER_ROW, SPAN = 1.26, SPEED = 0.0023;
-const chips = [];
-function pick() { return ITEMS[Math.floor(Math.random() * ITEMS.length)]; }
-function dress(c) {
-  const d = pick();
-  c.d = d; c.swapped = false;
-  c.el.textContent = d.t;
-  c.el.className = "chip " + (d.allow ? "ok" : "raw");
-}
-function place(c) {
-  c.el.style.left = (c.p * 100) + "%";
-  const edge = c.p < 0.04 ? c.p / 0.04 : c.p > 0.96 ? (1.08 - c.p) / 0.12 : 1;
-  c.el.style.opacity = Math.max(0, Math.min(1, edge));
-}
-function transform(c) {
-  c.swapped = true;
-  c.el.textContent = c.d.out;
-  c.el.className = "chip " + c.d.cls + (running ? " pop" : "");
-}
-for (let i = 0; i < N; i++) {
-  const el = document.createElement("div");
-  el.className = "chip raw";
-  el.style.top = (16 + (i % ROWS) * 54) + "px";
-  lane.appendChild(el);
-  const c = { el, p: (i / N) * SPAN - 0.13 };
-  dress(c);
-  if (c.p >= 0.5) transform(c);
-  place(c);
-  chips.push(c);
-}
-let running = true, raf = 0;
-function frame() {
-  for (const c of chips) {
-    c.p += SPEED;
-    if (c.p >= 1.08) { c.p -= SPAN; dress(c); place(c); continue; }
-    if (!c.swapped && c.p >= 0.5) transform(c);
-    place(c);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const inv=(s,e,p)=>clamp((p-s)/(e-s));
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+// ---- normalize path lengths so stroke draw works uniformly ----
+document.querySelectorAll('#sketch .draw').forEach(el=>{ try{el.setAttribute('pathLength','1');}catch(e){} });
+
+// ---- streaming locked nodes ----
+const nd=[['Aadhaar',16,24,0],['UPI',11,52,0],['card',19,80,0],['OTP',30,90,1],['PAN',84,22,0],['ABHA',89,52,0],['GSTIN',83,80,0],['phone',68,92,1]];
+const nodesEl=document.getElementById('nodes');
+nd.forEach(([t,x,y,low])=>{const n=document.createElement('div');n.className='node'+(low?' low':'');n.style.left=x+'%';n.style.top=y+'%';n.dataset.x=x;
+  n.innerHTML='<span class="lk">🔒</span><span class="tg">'+t+'</span>';nodesEl.appendChild(n);});
+
+// ---- refs ----
+const story=document.querySelector('.story');
+const paper=document.getElementById('paper'), space=document.getElementById('space');
+const scenewrap=document.getElementById('scenewrap'), sketch=document.getElementById('sketch');
+const inks=[...document.querySelectorAll('#sketch .draw')];
+const labelsG=document.getElementById('labels');
+const labs=[...document.querySelectorAll('#labels .lab, #labels .cl')];
+const skshield=document.getElementById('skshield');
+const write=document.getElementById('write'), w1=document.getElementById('w1'), w2=document.getElementById('w2');
+const glow=document.getElementById('glow'), nodes=[...document.querySelectorAll('.node')];
+const chrome=document.getElementById('chrome'), finale=document.getElementById('finale');
+const railI=document.querySelector('.rail i'), hint=document.querySelector('.hint'), skipIntro=document.querySelector('.skip-intro');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let MORPH=0; // shared with particles
+
+// ---- boiling ink (frame-by-frame hand-animation feel) ----
+const boilN=document.getElementById('boilN');
+const seeds=[2,9,17,27]; let si=0;
+if(!reduce) setInterval(()=>{ if(MORPH>0.9)return; si=(si+1)%seeds.length; boilN.setAttribute('seed',seeds[si]); }, 115);
+
+// ---- particle field (dust on paper -> stars in space) ----
+const cv=document.getElementById('dust'), ctx=cv.getContext('2d');
+let W=0,H=0,DPR=Math.min(2,devicePixelRatio||1),P=[];
+function resize(){ W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+  P=Array.from({length: Math.round(W*H/16000)+40},()=>({x:Math.random()*W,y:Math.random()*H,
+    r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.08,vy:-(Math.random()*.16+.03),tw:Math.random()*6.28})); }
+resize(); addEventListener('resize',resize);
+function particles(){
+  ctx.clearRect(0,0,W,H);
+  for(const p of P){
+    if(!reduce){ p.x+=p.vx; p.y+=p.vy; p.tw+=0.03; }
+    if(p.y<-6)p.y=H+6; if(p.x<-6)p.x=W+6; if(p.x>W+6)p.x=-6;
+    const star=MORPH, twk=reduce?1:0.6+0.4*Math.sin(p.tw);
+    const a=lerp(0.18,0.9,star)*twk;
+    const R= star>.4? p.r*(1.3-0.3*Math.cos(p.tw)) : p.r;
+    ctx.beginPath(); ctx.arc(p.x,p.y,R,0,6.283);
+    ctx.fillStyle= star<.5 ? `rgba(70,58,34,${a*0.5})` : `rgba(190,200,240,${a})`;
+    ctx.fill();
   }
-  raf = requestAnimationFrame(frame);
 }
-const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const pauseBtn = document.getElementById("pause");
-function start() { if (!raf) { running = true; raf = requestAnimationFrame(frame); } pauseBtn.textContent = "Pause"; pauseBtn.setAttribute("aria-pressed", "false"); }
-function stop() { cancelAnimationFrame(raf); raf = 0; running = false; pauseBtn.textContent = "Play"; pauseBtn.setAttribute("aria-pressed", "true"); }
-pauseBtn.addEventListener("click", () => { raf ? stop() : start(); });
-if (reduce) { running = false; pauseBtn.textContent = "Play"; pauseBtn.setAttribute("aria-pressed", "true"); }
-else { start(); }
+
+// ---- scroll render ----
+function render(){
+  const rect=story.getBoundingClientRect();
+  const total=story.offsetHeight-innerHeight;
+  const p=clamp(-rect.top/total);
+  railI.style.setProperty('--pw',(p*100)+'%');
+
+  // self-draw
+  for(const el of inks){ el.style.strokeDashoffset = 1 - inv(+el.dataset.s,+el.dataset.e,p); }
+  for(const el of labs){ el.style.opacity = inv(+el.dataset.s,+el.dataset.e,p); }
+
+  // parallax push-in on the scene
+  const push=inv(0.36,0.56,p);
+  scenewrap.style.transform=`perspective(1500px) rotateX(${lerp(0,7,push)}deg) scale(${lerp(1,1.14,push)})`;
+  // fade busy sketch + labels toward the question, then gone at morph
+  const sketchFade=lerp(1,0.16,inv(0.38,0.54,p))*(1-clamp(inv(0.60,0.76,p)));
+  sketch.style.opacity=sketchFade; labelsG.style.opacity=sketchFade;
+
+  // handwriting (typewriter on desktop, simple fade on mobile where it wraps)
+  write.style.opacity=clamp(inv(0.40,0.56,p)*2.2)*(1-clamp(inv(0.58,0.68,p)));
+  if(innerWidth<=640){ w1.style.width='auto'; w2.style.width='auto'; }
+  else { w1.style.width=(clamp(inv(0.40,0.49,p))*100)+'%'; w2.style.width=(clamp(inv(0.48,0.56,p))*100)+'%'; }
+
+  // ===== morph (0.54 -> 0.80) =====
+  const m=inv(0.54,0.80,p); MORPH=m;
+  space.style.opacity=m;
+  paper.style.opacity=1-clamp(inv(0.56,0.78,p));
+  paper.style.setProperty('--rules',lerp(0.55,0,clamp(inv(0.54,0.70,p))));
+  // shield: sketch morphs into glow (begins as morph ends — no static beat)
+  const f0=inv(0.80,0.98,p);
+  glow.style.opacity=clamp(inv(0.54,0.70,p));
+  const gs=lerp(.6,1,clamp(inv(0.54,0.78,p)))*(1-f0*0.30);
+  glow.style.transform=`translate(-50%, calc(-50% + ${f0*-150}px)) scale(${gs})`;
+  // streaming locks in from the sides
+  nodesEl.style.opacity=clamp(inv(0.62,0.84,p));
+  const ns=inv(0.60,0.88,p);
+  nodes.forEach(n=>{const x=+n.dataset.x,dir=x<50?-1:1;
+    n.style.transform=`translate(calc(-50% + ${dir*lerp(260,0,ns)}px), calc(-50% + ${f0*-120}px))`;});
+  chrome.style.opacity=clamp(inv(0.68,0.88,p));
+
+  // finale
+  finale.style.opacity=f0; finale.style.transform=`translateY(${lerp(22,0,f0)}px)`;
+
+  // hint + theme
+  hint.style.setProperty('--hint', p<0.04?1:0);
+  const uiCol = p>0.58 ? 'var(--sub)' : 'var(--ink)';
+  hint.style.color = uiCol; skipIntro.style.color = uiCol;
+}
+
+function loop(){ render(); particles(); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+addEventListener('scroll',render,{passive:true});
 </script>
 </body>
 </html>
