@@ -1,0 +1,11 @@
+{
+  "name": "@kavach/client",
+  "version": "0.0.1",
+  "description": "JavaScript/TypeScript client for the Kavach agent data-firewall service",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": ["src"],
+  "license": "Apache-2.0",
+  "keywords": ["kavach", "pii", "dlp", "ai-agents", "dpdp"]
+}
