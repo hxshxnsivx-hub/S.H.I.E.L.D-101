@@ -14,3 +14,6 @@ build/
 .DS_Store
 .idea/
 .vscode/
+
+# tool-specific config (not part of the product)
+.claude/
