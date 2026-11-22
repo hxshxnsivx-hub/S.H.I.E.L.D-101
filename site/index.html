@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kavach — the agent data-firewall, sketched</title>
-<meta name="description" content="A hand-drawn notebook: an AI agent types a tool call and leaks Aadhaar, UPI, cards — and Kavach, the firewall that catches it and proves it. India-native, DPDP-ready, open source.">
+<title>S.H.I.E.L.D — the agent data-firewall, sketched</title>
+<meta name="description" content="A hand-drawn notebook: an AI agent types a tool call and leaks Aadhaar, UPI, cards — and S.H.I.E.L.D, the firewall that catches it and proves it. India-native, DPDP-ready, open source.">
 <meta name="theme-color" content="#fbf8ec">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231a2b4a'/><text x='16' y='23' font-size='20' font-family='sans-serif' font-weight='700' fill='%23fbf8ec' text-anchor='middle'>K</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231a2b4a'/><text x='16' y='23' font-size='20' font-family='sans-serif' font-weight='700' fill='%23fbf8ec' text-anchor='middle'>S</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
@@ -51,8 +51,9 @@
 
   /* big headline (beat A) */
   .bigHead{z-index:6;opacity:0;text-align:center;padding:0 24px}
-  .bigHead h1{font-family:"Caveat",cursive;font-weight:700;color:var(--ink);margin:0;line-height:.92;font-size:clamp(46px,10vw,132px)}
+  .bigHead h1{font-family:"Caveat",cursive;font-weight:700;color:var(--ink);margin:0;line-height:.96;font-size:clamp(34px,6.4vw,82px)}
   .bigHead em{font-style:normal;color:var(--red)}
+  .bigHead .bhsub{font-family:"Kalam",cursive;color:var(--ink-soft);margin:22px 0 0;font-size:clamp(16px,2.5vw,24px)}
 
   /* the scene svg */
   .sceneLayer{z-index:4}
@@ -82,8 +83,8 @@
 
   /* final title (beat G) */
   .kTitle{z-index:7;opacity:0;text-align:center;padding:0 24px 15vh;align-items:end}
-  .kTitle h1{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(58px,11vw,128px);margin:0;line-height:.86;color:var(--ink)}
-  .kTitle .sub{font-family:"Kalam",cursive;font-size:clamp(17px,2.5vw,24px);color:var(--ink-soft);margin:10px auto 0;max-width:30ch}
+  .kTitle h1{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(40px,8vw,92px);margin:0;line-height:.9;letter-spacing:-.01em;color:var(--ink)}
+  .kTitle .sub{font-family:"Kalam",cursive;font-size:clamp(16px,2.3vw,22px);color:var(--ink-soft);margin:12px auto 0;max-width:34ch}
 
   /* ===== NOTEBOOK CONTENT ===== */
   main{position:relative;z-index:2}
@@ -164,7 +165,10 @@
   <div class="stage">
 
     <!-- beat A: big headline -->
-    <div class="layer bigHead" id="bigHead"><h1>An AI agent is about to<br>leak <em>everything.</em></h1></div>
+    <div class="layer bigHead" id="bigHead"><div>
+      <h1>Do you know your private info<br>is getting <em>leaked?</em></h1>
+      <p class="bhsub">Want to know how to stop it? &mdash; scroll down ↓</p>
+    </div></div>
 
     <!-- the scene -->
     <div class="layer sceneLayer">
@@ -213,7 +217,7 @@
 
     <!-- beat G: final title -->
     <div class="layer kTitle" id="kTitle">
-      <div><h1>Kavach</h1>
+      <div><h1>S.H.I.E.L.D</h1>
       <p class="sub">the firewall that catches the leak — and proves it</p></div>
     </div>
 
@@ -226,7 +230,7 @@
   <section class="sheet">
     <div class="ey reveal">the idea</div>
     <h2 class="reveal">It sits on the tool call</h2>
-    <p class="say reveal">An agent's real risk is the arguments it hands to a tool. Kavach reads every argument before it leaves, decides what's safe, and acts — while your model, prompt and graph stay exactly as they are.</p>
+    <p class="say reveal">An agent's real risk is the arguments it hands to a tool. S.H.I.E.L.D reads every argument before it leaves, decides what's safe, and acts — while your model, prompt and graph stay exactly as they are.</p>
     <div class="steps">
       <div class="note step reveal"><div class="n">1</div>
         <svg class="ico" viewBox="0 0 24 24"><path d="M4 12h10M10 7l6 5-6 5"/><rect x="16" y="5" width="4" height="14" rx="1"/></svg>
@@ -246,7 +250,7 @@
   <section class="sheet">
     <div class="ey reveal">caught in the act</div>
     <h2 class="reveal">One tool call, guarded</h2>
-    <p class="say reveal">Here's an agent calling an <b>untrusted CRM</b>. Kavach reads each field, decides, and only lets the safe version out — secrets never leave.</p>
+    <p class="say reveal">Here's an agent calling an <b>untrusted CRM</b>. S.H.I.E.L.D reads each field, decides, and only lets the safe version out — secrets never leave.</p>
     <div class="note console reveal">
       <div class="crow head"><span>field</span><span>detected</span><span>action</span><span>egress</span></div>
       <div class="crow"><span class="fld">.aadhaar</span><span class="cls"><b>AADHAAR</b> · S3</span><span class="act tok">tokenize</span><span class="res mono">‹AADHAAR:tok2›</span></div>
@@ -261,12 +265,12 @@
   <section class="sheet">
     <div class="ey reveal">how it fits</div>
     <h2 class="reveal">Detect, decide, act — then prove</h2>
-    <p class="say reveal">Raw data flows from the agent into Kavach; only the guarded version reaches each destination, by how much you trust it.</p>
+    <p class="say reveal">Raw data flows from the agent into S.H.I.E.L.D; only the guarded version reaches each destination, by how much you trust it.</p>
     <div class="note diagram reveal">
-      <svg class="dg" viewBox="0 0 560 300" role="img" aria-label="Agent sends raw data to Kavach, which sends tokenized, masked or full data to tools by trust">
+      <svg class="dg" viewBox="0 0 560 300" role="img" aria-label="Agent sends raw data to S.H.I.E.L.D, which sends tokenized, masked or full data to tools by trust">
         <rect class="box" x="12" y="122" width="120" height="56" rx="8"/><text x="72" y="146" text-anchor="middle">AI Agent</text><text class="s" x="72" y="164" text-anchor="middle">tool call</text>
         <path class="raw flow" d="M132 150 H250"/><text class="s" x="190" y="142" text-anchor="middle" fill="#c0392b">raw PII</text>
-        <path class="hub" d="M250 124 h60 v52 h-60 Z"/><text x="280" y="155" text-anchor="middle" fill="#fff">🛡</text><text class="s" x="280" y="196" text-anchor="middle">Kavach</text>
+        <path class="hub" d="M250 124 h60 v52 h-60 Z"/><text x="280" y="155" text-anchor="middle" fill="#fff">🛡</text><text class="s" x="280" y="196" text-anchor="middle">S.H.I.E.L.D</text>
         <path class="flow" d="M310 150 C360 150 360 60 440 60"/><path class="flow" d="M310 150 H440"/><path class="flow" d="M310 150 C360 150 360 240 440 240"/>
         <rect class="box" x="440" y="38" width="110" height="46" rx="8"/><text x="495" y="60" text-anchor="middle">Core banking</text><text class="s" x="495" y="76" text-anchor="middle">trusted · full</text>
         <rect class="box" x="440" y="127" width="110" height="46" rx="8"/><text x="495" y="149" text-anchor="middle">CRM API</text><text class="s" x="495" y="165" text-anchor="middle">tokenized</text>
@@ -303,7 +307,7 @@
 </main>
 
 <footer>
-  Kavach — the agent data-firewall. Metrics shown are on synthetic data. · Apache-2.0 ·
+  S.H.I.E.L.D — the agent data-firewall. Metrics shown are on synthetic data. · Apache-2.0 ·
   <a href="https://github.com/hxshxnsivx-hub/S.H.I.E.L.D-101" target="_blank" rel="noreferrer">github.com/hxshxnsivx-hub/S.H.I.E.L.D-101</a>
 </footer>
 
@@ -369,8 +373,8 @@ function render(){
   railI.style.setProperty('--pw',(clamp(-rect.top/story.offsetHeight)*100)+'%');
 
   // title beat drives a shared upward lift so nothing collides
-  const kv=inv(0.86,1,p);
-  const lift=lerp(0,-150,kv);
+  const kv=ease(inv(0.84,0.95,p));
+  const lift=lerp(0,-230,kv);
 
   // A — headline fills the page at the top, then clears as the monitor fades in
   bigHead.style.opacity=1-clamp(inv(0.10,0.16,p));
@@ -414,9 +418,10 @@ function render(){
   shOut.forEach(o=>o.style.strokeDashoffset=1-inv(0.64,0.82,p));
   shWash.style.opacity=lerp(0,.16,clamp(inv(0.78,0.92,p)));
 
-  // G — final title; shield lifts with the locked ring to clear the title
-  kTitle.style.opacity=kv;
-  shieldG.setAttribute('transform',`translate(${CX},${CY+lift}) scale(${lerp(1,.8,kv)})`);
+  // G — final title; shield + locked ring lift to the top, title fades in below after the lift
+  const tv=clamp(inv(0.92,1,p));
+  kTitle.style.opacity=tv;
+  shieldG.setAttribute('transform',`translate(${CX},${CY+lift}) scale(${lerp(1,.82,kv)})`);
 
   hint.style.setProperty('--hint', p<0.03?1:0);
 }
