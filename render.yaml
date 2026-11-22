@@ -1,0 +1,10 @@
+# Render Blueprint — deploys the S.H.I.E.L.D landing page as a static site.
+# Use it: render.com -> New + -> Blueprint -> connect this repo (it reads this file).
+# Or set it manually (New + -> Static Site): Build Command = (empty), Publish Directory = site
+services:
+  - type: web
+    name: shield-firewall
+    runtime: static
+    buildCommand: "echo 'static site — no build step'"
+    staticPublishPath: site
+    autoDeploy: true
