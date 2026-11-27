@@ -199,11 +199,9 @@
         <!-- chips are injected by JS into this group -->
         <g id="chips"></g>
 
-        <!-- shield (catches the leak) -->
+        <!-- 3D shield render (Blender) catches the leak -->
         <g id="shieldG" transform="translate(600,300)">
-          <path class="wash" d="M0 -82 L54 -58 V-6 C54 40 28 70 0 82 C-28 70 -54 40 -54 -6 V-58 Z"/>
-          <path class="out" d="M0 -82 L54 -58 V-6 C54 40 28 70 0 82 C-28 70 -54 40 -54 -6 V-58 Z"/>
-          <path class="out" d="M0 -50 V52 M-28 -16 H28" style="stroke-width:3.4"/>
+          <image id="shieldImg" href="assets/shield3d.png" x="-82" y="-103" width="164" height="206" preserveAspectRatio="xMidYMid meet"/>
         </g>
       </svg>
     </div>
@@ -362,7 +360,7 @@ const typed=[...document.querySelectorAll('#stage text.typed')];
 const sendbtn=document.getElementById('sendbtn'),sendRect=sendbtn.querySelector('rect'),sendText=sendbtn.querySelector('text');
 const cursor=document.getElementById('cursor');
 const leakArrows=[...document.querySelectorAll('.leakarrow')];
-const shieldG=document.getElementById('shieldG'),shOut=[...shieldG.querySelectorAll('.out')],shWash=shieldG.querySelector('.wash');
+const shieldG=document.getElementById('shieldG');
 const stopWrap=document.getElementById('stopWrap');
 const kTitle=document.getElementById('kTitle');
 const hint=document.getElementById('hint'),railI=document.querySelector('.rail i');
@@ -413,15 +411,14 @@ function render(){
   // E — stop callout
   stopWrap.style.opacity=band(p,0.52,0.60,0.72,0.78);
 
-  // F — shield draws + fills
-  shieldG.style.opacity=clamp(inv(0.64,0.72,p));
-  shOut.forEach(o=>o.style.strokeDashoffset=1-inv(0.64,0.82,p));
-  shWash.style.opacity=lerp(0,.16,clamp(inv(0.78,0.92,p)));
+  // F — 3D shield fades + scales in as it catches the data
+  shieldG.style.opacity=clamp(inv(0.62,0.74,p));
+  const cin=ease(inv(0.62,0.80,p));
 
   // G — final title; shield + locked ring lift to the top, title fades in below after the lift
   const tv=clamp(inv(0.92,1,p));
   kTitle.style.opacity=tv;
-  shieldG.setAttribute('transform',`translate(${CX},${CY+lift}) scale(${lerp(1,.82,kv)})`);
+  shieldG.setAttribute('transform',`translate(${CX},${CY+lift}) scale(${lerp(0.42,1,cin)*lerp(1,.82,kv)})`);
 
   hint.style.setProperty('--hint', p<0.03?1:0);
 }
